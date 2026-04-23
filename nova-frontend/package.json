@@ -1,0 +1,47 @@
+{
+    "name": "nova-streaming",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "concurrently \"npm:dev:frontend\" \"npm:dev:backend\"",
+        "dev:frontend": "vite",
+        "dev:backend": "bun --watch run server/index.ts",
+        "build": "tsc && vite build",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "preview": "vite preview",
+        "start": "bun run server/index.ts"
+    },
+    "dependencies": {
+        "@consumet/extensions": "^1.8.8",
+        "@intercom/messenger-js-sdk": "^0.0.18",
+        "@netlify/functions": "^5.2.0",
+        "@supabase/supabase-js": "^2.94.1",
+        "axios": "^1.13.6",
+        "framer-motion": "^12.33.0",
+        "hls.js": "^1.6.15",
+        "hono": "^4.12.5",
+        "plyr-react": "^6.0.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-router-dom": "^6.20.0",
+        "remixicon": "^4.0.0",
+        "stripe": "^22.0.2"
+    },
+    "devDependencies": {
+        "@testing-library/jest-dom": "^6.8.0",
+        "@testing-library/react": "^16.3.0",
+        "@types/react": "^18.2.37",
+        "@types/react-dom": "^18.2.15",
+        "@vitejs/plugin-react": "^5.1.4",
+        "autoprefixer": "^10.4.16",
+        "concurrently": "^8.2.2",
+        "jsdom": "^26.1.0",
+        "postcss": "^8.4.31",
+        "tailwindcss": "^3.3.5",
+        "typescript": "^5.2.2",
+        "vite": "^7.3.1",
+        "vitest": "^3.2.4"
+    }
+}

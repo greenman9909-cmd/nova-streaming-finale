@@ -1,0 +1,38 @@
+{
+    "name": "nova-streaming",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+        "dev:frontend": "vite",
+        "dev:backend": "bun --watch run server/index.ts",
+        "build": "tsc && vite build",
+        "preview": "vite preview",
+        "start": "bun run server/index.ts"
+    },
+    "dependencies": {
+        "@consumet/extensions": "^1.8.8",
+        "@supabase/supabase-js": "^2.94.1",
+        "axios": "^1.13.4",
+        "framer-motion": "^12.33.0",
+        "hls.js": "^1.6.15",
+        "hono": "^4.0.0",
+        "plyr-react": "^6.0.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-router-dom": "^6.20.0",
+        "remixicon": "^4.0.0"
+    },
+    "devDependencies": {
+        "@types/react": "^18.2.37",
+        "@types/react-dom": "^18.2.15",
+        "@vitejs/plugin-react": "^4.2.0",
+        "autoprefixer": "^10.4.16",
+        "concurrently": "^8.2.2",
+        "postcss": "^8.4.31",
+        "tailwindcss": "^3.3.5",
+        "typescript": "^5.2.2",
+        "vite": "^5.0.0"
+    }
+}

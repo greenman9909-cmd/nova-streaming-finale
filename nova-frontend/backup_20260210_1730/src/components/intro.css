@@ -1,0 +1,185 @@
+/* Intro Animation Styles */
+.intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background-color: #030305;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* --- Word Spinner (Uiverse.io by kennyotsu) --- */
+.intro-card {
+    /* color used to softly clip top and bottom of the .words container */
+    --bg-color: #030305;
+    background-color: var(--bg-color);
+    padding: 1rem 2rem;
+    border-radius: 1.25rem;
+    z-index: 10;
+    margin-top: 2rem;
+}
+
+.intro-loader {
+    color: rgb(124, 124, 124);
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 25px;
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+    height: 40px;
+    padding: 10px 10px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.intro-words {
+    overflow: hidden;
+    position: relative;
+}
+
+.intro-words::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(var(--bg-color) 10%,
+            transparent 30%,
+            transparent 70%,
+            var(--bg-color) 90%);
+    z-index: 20;
+}
+
+.intro-word {
+    display: block;
+    height: 100%;
+    padding-left: 10px;
+    color: #a855f7;
+    /* Violet-500 */
+    animation: intro-spin 4s infinite;
+}
+
+@keyframes intro-spin {
+    10% {
+        transform: translateY(-102%);
+    }
+
+    25% {
+        transform: translateY(-100%);
+    }
+
+    35% {
+        transform: translateY(-202%);
+    }
+
+    50% {
+        transform: translateY(-200%);
+    }
+
+    60% {
+        transform: translateY(-302%);
+    }
+
+    75% {
+        transform: translateY(-300%);
+    }
+
+    85% {
+        transform: translateY(-402%);
+    }
+
+    100% {
+        transform: translateY(-400%);
+    }
+}
+
+/* --- 3D Rotating Carousel (Uiverse.io by ilkhoeri) --- */
+.carousel-wrapper {
+    width: 100%;
+    height: 300px;
+    /* Constrained height */
+    position: relative;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    perspective: 1000px;
+}
+
+.carousel-inner {
+    --w: 120px;
+    --h: 180px;
+    --quantity: 6;
+    /* Number of cards */
+    --translateZ: 220px;
+    /* Distance from center */
+    --rotateX: -10deg;
+    --perspective: 1000px;
+
+    position: absolute;
+    width: var(--w);
+    height: var(--h);
+    z-index: 2;
+    transform-style: preserve-3d;
+    transform: perspective(var(--perspective));
+    animation: carousel-rotating 10s linear infinite;
+    /* Speed up for intro */
+}
+
+@keyframes carousel-rotating {
+    from {
+        transform: perspective(var(--perspective)) rotateX(var(--rotateX)) rotateY(0);
+    }
+
+    to {
+        transform: perspective(var(--perspective)) rotateX(var(--rotateX)) rotateY(360deg);
+    }
+}
+
+.carousel-card {
+    position: absolute;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    inset: 0;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    /* Calculate rotation based on index */
+    transform: rotateY(calc((360deg / var(--quantity)) * var(--index))) translateZ(var(--translateZ));
+    background-color: #1a1a1a;
+}
+
+.carousel-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Nova Logo Pulse */
+.intro-logo-container {
+    margin-bottom: 2rem;
+    animation: pulse-logo 2s infinite;
+}
+
+@keyframes pulse-logo {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+        filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.6));
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+}

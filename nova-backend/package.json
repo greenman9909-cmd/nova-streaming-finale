@@ -1,0 +1,25 @@
+{
+  "name": "nova-backend",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=20.x"
+  },
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun --watch run src/index.ts",
+    "build": "echo 'No build step required for Vercel serverless'"
+  },
+  "dependencies": {
+    "@consumet/extensions": "^1.8.8",
+    "@supabase/supabase-js": "^2.93.1",
+    "axios": "^1.13.6",
+    "got-scraping": "^4.2.1",
+    "hono": "^4.0.0",
+    "stripe": "^22.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.6",
+    "@types/node": "^25.5.0",
+    "typescript": "^5.9.3"
+  }
+}

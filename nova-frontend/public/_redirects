@@ -1,0 +1,2 @@
+/api/*  https://nova-backhend.vercel.app/api/:splat  200!
+/*      /index.html   200
