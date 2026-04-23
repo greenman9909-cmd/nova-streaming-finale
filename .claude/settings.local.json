@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(npx tsc:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://rrtgfxytykqgxoxohmqh.supabase.co/rest/v1/\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydGdmeHl0eWtxZ3hveG9obXFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjY4NzgsImV4cCI6MjA4ODkwMjg3OH0.K_NvgweyTTOE8laxLULjjLu22yuHeHzlI77ko2njRco\")",
+      "Bash(curl -s \"https://rrtgfxytykqgxoxohmqh.supabase.co/rest/v1/\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydGdmeHl0eWtxZ3hveG9obXFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjY4NzgsImV4cCI6MjA4ODkwMjg3OH0.K_NvgweyTTOE8laxLULjjLu22yuHeHzlI77ko2njRco\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydGdmeHl0eWtxZ3hveG9obXFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjY4NzgsImV4cCI6MjA4ODkwMjg3OH0.K_NvgweyTTOE8laxLULjjLu22yuHeHzlI77ko2njRco\")",
+      "Bash(curl -s \"https://rrtgfxytykqgxoxohmqh.supabase.co/auth/v1/health\")",
+      "Bash(curl -s -w '\\\\nHTTP:%{http_code}' 'https://rrtgfxytykqgxoxohmqh.supabase.co/rest/v1/watchlist?select=id&limit=1' -H 'apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydGdmeHl0eWtxZ3hveG9obXFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjY4NzgsImV4cCI6MjA4ODkwMjg3OH0.K_NvgweyTTOE8laxLULjjLu22yuHeHzlI77ko2njRco' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydGdmeHl0eWtxZ3hveG9obXFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjY4NzgsImV4cCI6MjA4ODkwMjg3OH0.K_NvgweyTTOE8laxLULjjLu22yuHeHzlI77ko2njRco')",
+      "Bash(curl -s -w '\\\\nHTTP:%{http_code}' https://rrtgfxytykqgxoxohmqh.supabase.co/auth/v1/health -H 'apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydGdmeHl0eWtxZ3hveG9obXFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjY4NzgsImV4cCI6MjA4ODkwMjg3OH0.K_NvgweyTTOE8laxLULjjLu22yuHeHzlI77ko2njRco')",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}

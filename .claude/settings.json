@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs basename *)",
+      "Bash(curl -s 'https://api.stripe.com/v1/prices?limit=20&active=true' -u rk_test_51Sbmz7AxU1OE9jbwekmH8i3Ek8eyrvvjAxm0LjEthIDc8EgivdTL86Q99WUq5GyVaCVUJVN0YUl5tLoZu2FtmQUQ00JCNns06v:)",
+      "Bash(python3 -c ' *)"
+    ]
+  }
+}
