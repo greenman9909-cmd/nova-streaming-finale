@@ -84,7 +84,7 @@ export default function Plans() {
 
         if ((isDeal || isSuccess) && sessionId) {
             // Synchronously write subscription from Stripe session, then refresh context
-            fetch(`/api/stripe/verify-session?session_id=${sessionId}`)
+            fetch(`${import.meta.env.VITE_API_URL || ""}/api/stripe/verify-session?session_id=${sessionId}`)
                 .then(() => refreshSubscription())
                 .then(() => {
                     setToast({
@@ -106,7 +106,7 @@ export default function Plans() {
         if (!user) { navigate('/login?redirect=/plans'); return; }
         setDealLoading(true);
         try {
-            const res = await fetch('/api/stripe/deal-checkout', {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/stripe/deal-checkout`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: user.id, userEmail: user.email }),
@@ -140,7 +140,7 @@ export default function Plans() {
 
         setLoadingPlan(planId);
         try {
-            const res = await fetch('/api/stripe/create-checkout-session', {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/stripe/create-checkout-session`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

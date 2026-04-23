@@ -188,7 +188,7 @@ export default function MovieWatch() {
                     try {
                         const controller = new AbortController();
                         const timer = setTimeout(() => controller.abort(), 5000);
-                        const res = await fetch(`/api/movies/${contentId}`, { signal: controller.signal });
+                        const res = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/movies/${contentId}`, { signal: controller.signal });
                         clearTimeout(timer);
                         const data = await res.json();
 

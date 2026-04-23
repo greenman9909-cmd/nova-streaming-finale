@@ -170,7 +170,7 @@ export default function Settings() {
         if (!user) return;
         setSubAction('canceling');
         try {
-            const res = await fetch('/api/stripe/cancel-subscription', {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/stripe/cancel-subscription`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: user.id }),
@@ -194,7 +194,7 @@ export default function Settings() {
         if (!user) return;
         setSubAction('refunding');
         try {
-            const res = await fetch('/api/stripe/request-refund', {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/stripe/request-refund`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: user.id }),

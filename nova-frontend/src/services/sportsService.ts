@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Streamed.pk API Configuration
 // Streamed.pk API Configuration
-const STREAMED_BASE_URL = '/api/sports';
+const STREAMED_BASE_URL = `${import.meta.env.VITE_API_URL || ""}/api/sports`;
 
 // Create Axios instance
 const streamedApi = axios.create({

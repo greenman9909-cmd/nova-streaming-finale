@@ -212,7 +212,7 @@ export default function ContentCard(props: ContentCardProps) {
                         <div className="flex flex-col items-center gap-2 w-1/3">
                             <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/10 p-2 flex items-center justify-center backdrop-blur-sm border border-white/10">
                                 {teams.home?.badge ? (
-                                    <img src={`/api/sports/images/badge/${teams.home.badge}.webp`} alt={teams.home.name} className="w-full h-full object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+                                    <img src={`${import.meta.env.VITE_API_URL || ""}/api/sports/images/badge/${teams.home.badge}.webp`} alt={teams.home.name} className="w-full h-full object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
                                 ) : (
                                     <span className="text-xl font-bold text-white">{teams.home?.name?.[0]}</span>
                                 )}
@@ -226,7 +226,7 @@ export default function ContentCard(props: ContentCardProps) {
                         <div className="flex flex-col items-center gap-2 w-1/3">
                             <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/10 p-2 flex items-center justify-center backdrop-blur-sm border border-white/10">
                                 {teams.away?.badge ? (
-                                    <img src={`/api/sports/images/badge/${teams.away.badge}.webp`} alt={teams.away.name} className="w-full h-full object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+                                    <img src={`${import.meta.env.VITE_API_URL || ""}/api/sports/images/badge/${teams.away.badge}.webp`} alt={teams.away.name} className="w-full h-full object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
                                 ) : (
                                     <span className="text-xl font-bold text-white">{teams.away?.name?.[0]}</span>
                                 )}

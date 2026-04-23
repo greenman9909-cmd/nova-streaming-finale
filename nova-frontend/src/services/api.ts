@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 // TMDB proxy configuration (frontend never sends TMDB key directly)
-const TMDB_PROXY_BASE_URL = '/api/tmdb';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+const TMDB_PROXY_BASE_URL = `${API_BASE_URL}/api/tmdb`;
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p';
 const TMDB_DEFAULT_LANGUAGE = 'es-ES';
 

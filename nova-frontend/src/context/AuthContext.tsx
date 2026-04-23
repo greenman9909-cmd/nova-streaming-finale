@@ -275,7 +275,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const identifyAgent = async (userId: string, email?: string, name?: string) => {
         try {
-            const response = await fetch('/api/auth/identify', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/auth/identify`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId })

@@ -86,7 +86,7 @@ export default function Watch() {
     useEffect(() => {
         const fetchEpisodes = async () => {
             try {
-                const response = await fetch(`/api/episodes/${animeId}`);
+                const response = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/episodes/${animeId}`);
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success && data.results?.episodes) {
@@ -127,7 +127,7 @@ export default function Watch() {
         setDubAvailable(null);
         const loadServers = async () => {
             try {
-                const response = await fetch(`/api/servers/${encodeURIComponent(episodeStreamId)}`);
+                const response = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/servers/${encodeURIComponent(episodeStreamId)}`);
                 const data = await response.json();
                 if (cancelled) return;
 
