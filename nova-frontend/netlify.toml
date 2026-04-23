@@ -11,12 +11,6 @@
 [build.environment]
   NODE_VERSION = "20"
 
-# API routes → Netlify Function (backend)
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/api/api/:splat"
-  status = 200
-  force = true
 
 # SPA fallback — must be LAST
 [[redirects]]

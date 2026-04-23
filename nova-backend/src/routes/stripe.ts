@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const stripeRouter = new Hono();
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy_key_to_prevent_crash', {
   apiVersion: '2025-01-27.acacia' as any,
 });
 

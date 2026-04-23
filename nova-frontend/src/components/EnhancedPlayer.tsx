@@ -187,6 +187,14 @@ export default function EnhancedPlayer({
                     />
                 )}
 
+                {/* Watermark cover — sits over the iframe controls bar where vidsrc branding appears */}
+                {!isHls && (
+                    <div
+                        className="absolute bottom-0 right-0 pointer-events-none z-[5]"
+                        style={{ width: '90px', height: '36px', background: '#000' }}
+                    />
+                )}
+
                 {/* Loading / switching / error overlay */}
                 {showOverlay && (
                     <div className="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-10 animate-fade-in">
