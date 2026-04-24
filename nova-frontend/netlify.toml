@@ -10,19 +10,10 @@
 [functions."api"]
   included_files = ["server/**"]
 
-# Environment variables needed at build time
 [build.environment]
   NODE_VERSION = "20"
 
-
-# Route all /api/* calls to the bundled Netlify Function — must come BEFORE the SPA fallback
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
-  status = 200
-  force = true
-
-# SPA fallback — must be LAST
+# SPA fallback — /api/* is handled by the v2 function config.path, not a redirect
 [[redirects]]
   from = "/*"
   to = "/index.html"

@@ -6,6 +6,7 @@ import { authRouter } from '../../server/routes/auth'
 import { sportsRouter } from '../../server/routes/sports'
 import { tmdbRouter } from '../../server/routes/tmdb'
 import { moviesRouter } from '../../server/routes/movies'
+import { stripeRouter } from '../../server/routes/stripe'
 
 const app = new Hono()
 
@@ -21,6 +22,7 @@ app.route('/api/auth', authRouter)
 app.route('/api/sports', sportsRouter)
 app.route('/api/tmdb', tmdbRouter)
 app.route('/api/movies', moviesRouter)
+app.route('/api/stripe', stripeRouter)
 app.route('/api', animeRouter)
 
 // Netlify Functions v2 — native Web API (Request → Response)
