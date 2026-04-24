@@ -31,8 +31,21 @@ const DynamicHeroBanner: React.FC<DynamicHeroBannerProps> = ({ items }) => {
 
     const currentItem = items[currentIndex];
 
-    // Safety check
-    if (!currentItem) return null;
+    // Render a fixed-height skeleton so the layout never collapses when content is loading
+    if (!currentItem) return (
+        <section className="relative w-full h-[88vh] min-h-[580px] overflow-hidden bg-[#0d0d0f] text-white select-none animate-pulse">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0d0d0f] via-[#12121a] to-[#0d0d0f]" />
+            <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16 flex flex-col gap-4">
+                <div className="h-3 w-24 rounded bg-white/10" />
+                <div className="h-10 w-64 rounded bg-white/10" />
+                <div className="h-4 w-96 max-w-full rounded bg-white/10" />
+                <div className="flex gap-3 mt-2">
+                    <div className="h-10 w-32 rounded-full bg-white/10" />
+                    <div className="h-10 w-10 rounded-full bg-white/10" />
+                </div>
+            </div>
+        </section>
+    );
 
     // Preload adjacent images so the browser has them ready before the slide changes
     useEffect(() => {
@@ -67,7 +80,7 @@ const DynamicHeroBanner: React.FC<DynamicHeroBannerProps> = ({ items }) => {
         if (items.length === 0) return;
         autoPlayRef.current = setInterval(() => {
             handleNext();
-        }, 7000); // 7 seconds per slide
+        }, 10000); // 10 seconds per slide
         return () => {
             if (autoPlayRef.current) clearInterval(autoPlayRef.current);
         };

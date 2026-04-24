@@ -72,7 +72,7 @@ export default function ContentCard(props: ContentCardProps) {
     const { addToWatchlist, removeFromWatchlist, isInWatchlist, user } = useAuth();
     const { t } = useSettings();
     const navigate = useNavigate();
-    const [imgError, setImgError] = useState(false);
+    const [imgError, setImgError] = useState(!image);
     const [isHovered, setIsHovered] = useState(false);
     const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
     const [isVerifyingSports, setIsVerifyingSports] = useState(false);
@@ -82,6 +82,9 @@ export default function ContentCard(props: ContentCardProps) {
     const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const fadeOutTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const isMountedRef = useRef(true);
+
+    // Hide card entirely when image fails (sports keep their icon fallback)
+    if (imgError && type !== 'Sports') return null;
 
     // Normalised id used for watchlist lookups
     const numericId = tmdbId || parseInt(String(id), 10);

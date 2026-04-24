@@ -9,7 +9,7 @@ import NotificationDropdown from './NotificationDropdown';
 import { useSettings } from '../context/SettingsContext';
 
 export default function Navbar() {
-    const { user, signOut } = useAuth();
+    const { user, signOut, activeProfile } = useAuth();
     const { t } = useSettings();
     const [searchOpen, setSearchOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -372,11 +372,11 @@ export default function Navbar() {
                                     <div className="relative group/profile">
                                         <button className="w-10 h-10 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-600 p-[1px] flex items-center justify-center overflow-hidden">
                                             <div className="w-full h-full rounded-full bg-[#0a0a0f] flex items-center justify-center overflow-hidden">
-                                                {user.user_metadata?.avatar_url ? (
-                                                    <img src={user.user_metadata.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                                {(activeProfile?.avatar || user.user_metadata?.avatar_url) ? (
+                                                    <img src={activeProfile?.avatar || user.user_metadata?.avatar_url} alt="Profile" className="w-full h-full object-cover" onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
                                                 ) : (
                                                     <span className="text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-fuchsia-400">
-                                                        {user.user_metadata?.username?.charAt(0).toUpperCase() || 'U'}
+                                                        {(activeProfile?.name || user.user_metadata?.username)?.charAt(0).toUpperCase() || 'U'}
                                                     </span>
                                                 )}
                                             </div>
@@ -384,9 +384,18 @@ export default function Navbar() {
 
                                         {/* Dropdown */}
                                         <div className="absolute top-12 right-0 bg-[#0a0a12]/95 backdrop-blur-xl border border-white/10 rounded-xl p-2 w-56 opacity-0 invisible group-hover/profile:opacity-100 group-hover/profile:visible transition-all flex flex-col gap-1 shadow-2xl z-50">
-                                            <div className="px-3 py-2 border-b border-white/5 mb-1">
-                                                <p className="text-white text-sm font-bold truncate">{user.user_metadata?.username || 'User'}</p>
-                                                <p className="text-gray-500 text-xs truncate">{user.email}</p>
+                                            <div className="px-3 py-2 border-b border-white/5 mb-1 flex items-center gap-2">
+                                                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center">
+                                                    {(activeProfile?.avatar || user.user_metadata?.avatar_url) ? (
+                                                        <img src={activeProfile?.avatar || user.user_metadata?.avatar_url} alt="avatar" className="w-full h-full object-cover" onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                                                    ) : (
+                                                        <span className="text-xs font-bold text-white">{(activeProfile?.name || user.user_metadata?.username)?.charAt(0).toUpperCase() || 'U'}</span>
+                                                    )}
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="text-white text-sm font-bold truncate">{activeProfile?.name || user.user_metadata?.username || 'User'}</p>
+                                                    <p className="text-gray-500 text-xs truncate">{user.email}</p>
+                                                </div>
                                             </div>
 
                                             <Link
