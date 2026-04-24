@@ -8,7 +8,9 @@
       "Bash(curl -s \"https://rrtgfxytykqgxoxohmqh.supabase.co/auth/v1/health\")",
       "Bash(curl -s -w '\\\\nHTTP:%{http_code}' 'https://rrtgfxytykqgxoxohmqh.supabase.co/rest/v1/watchlist?select=id&limit=1' -H 'apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydGdmeHl0eWtxZ3hveG9obXFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjY4NzgsImV4cCI6MjA4ODkwMjg3OH0.K_NvgweyTTOE8laxLULjjLu22yuHeHzlI77ko2njRco' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydGdmeHl0eWtxZ3hveG9obXFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjY4NzgsImV4cCI6MjA4ODkwMjg3OH0.K_NvgweyTTOE8laxLULjjLu22yuHeHzlI77ko2njRco')",
       "Bash(curl -s -w '\\\\nHTTP:%{http_code}' https://rrtgfxytykqgxoxohmqh.supabase.co/auth/v1/health -H 'apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydGdmeHl0eWtxZ3hveG9obXFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjY4NzgsImV4cCI6MjA4ODkwMjg3OH0.K_NvgweyTTOE8laxLULjjLu22yuHeHzlI77ko2njRco')",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(curl -s -H \"Authorization: Bearer nfp_YcEcTrQSvzeUtV4R2pTRJpMMqMf1Vic89ec6\" https://api.netlify.com/api/v1/sites)",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const sites=JSON.parse\\(d\\);sites.forEach\\(s=>console.log\\('Name:',s.name,'\\\\nURL:',s.ssl_url,'\\\\nStatus:',s.published_deploy?.state||'none','\\\\nID:',s.id,'\\\\n---'\\)\\)}\\)\")"
     ]
   }
 }
