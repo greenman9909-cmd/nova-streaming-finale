@@ -47,7 +47,7 @@ tmdbRouter.get('/*', async (c) => {
   const cached = tmdbCache.get(cacheKey);
 
   if (cached && cached.expiresAt > now) {
-    return c.json(cached.payload, cached.status);
+    return c.json(cached.payload, cached.status as any);
   }
 
   const upstreamUrl = `${TMDB_BASE_URL}${proxiedPath}?${query.toString()}`;
@@ -65,7 +65,7 @@ tmdbRouter.get('/*', async (c) => {
         status: upstreamResponse.status,
         message: text.slice(0, 300),
       },
-      upstreamResponse.status
+      upstreamResponse.status as any
     );
   }
 
@@ -76,7 +76,7 @@ tmdbRouter.get('/*', async (c) => {
     expiresAt: now + CACHE_TTL_MS,
   });
 
-  return c.json(payload, upstreamResponse.status);
+  return c.json(payload, upstreamResponse.status as any);
 });
 
 export { tmdbRouter };
