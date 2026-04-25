@@ -43,35 +43,51 @@ export default function Settings() {
     useEffect(() => {
         const getDeviceName = () => {
             const ua = window.navigator.userAgent;
-            const platform = navigator.platform;
+            const platform = navigator.platform || '';
             let os = 'Unknown OS';
-            if (platform.includes('Mac')) os = 'Mac OS';
-            else if (platform.includes('Win')) os = 'Windows PC';
-            else if (platform.includes('Linux')) os = 'Linux';
+            if (/iPhone|iPad|iPod/.test(ua)) os = 'iOS';
             else if (/Android/.test(ua)) os = 'Android';
-            else if (/iPhone|iPad|iPod/.test(ua)) os = 'iOS';
+            else if (platform.includes('Mac')) os = 'Mac OS';
+            else if (platform.includes('Win') || /Win/.test(ua)) os = 'Windows PC';
+            else if (platform.includes('Linux')) os = 'Linux';
 
-            let browser = 'Unknown Browser';
-            if (ua.includes('Firefox')) browser = 'Firefox';
-            else if (ua.includes('Edg')) browser = 'Edge';
-            else if (ua.includes('Chrome')) browser = 'Chrome';
-            else if (ua.includes('Safari')) browser = 'Safari';
+            let browser = 'Browser';
+            if (ua.includes('Firefox') && !ua.includes('Seamonkey')) browser = 'Firefox';
+            else if (ua.includes('Edg/') || ua.includes('EdgA/')) browser = 'Edge';
+            else if (ua.includes('OPR/') || ua.includes('Opera')) browser = 'Opera';
+            else if (ua.includes('Chrome') && !ua.includes('Chromium')) browser = 'Chrome';
+            else if (ua.includes('Safari') && !ua.includes('Chrome')) browser = 'Safari';
 
             return `${os} (${browser})`;
         };
 
-        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const location = tz ? tz.split('/')[1]?.replace('_', ' ') : 'Current Location';
+        const deviceName = getDeviceName();
 
-        setDevices([
-            {
-                id: 1,
-                name: getDeviceName(),
-                location: location || 'Unknown',
-                current: true,
-                ip: 'Local Network'
-            }
-        ]);
+        // Seed with timezone city while the IP fetch is in flight
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const tzCity = tz ? tz.split('/').pop()?.replace(/_/g, ' ') ?? 'Unknown' : 'Unknown';
+
+        setDevices([{ id: 1, name: deviceName, location: tzCity, current: true, ip: 'Loading...' }]);
+
+        // Fetch real public IP + city from ipapi.co (free, no key, 1000 req/day)
+        fetch('https://ipapi.co/json/')
+            .then(r => r.json())
+            .then((data) => {
+                const city = data.city || tzCity;
+                const country = data.country_name || '';
+                const ip = data.ip || '—';
+                setDevices([{
+                    id: 1,
+                    name: deviceName,
+                    location: country ? `${city} • ${country}` : city,
+                    current: true,
+                    ip,
+                }]);
+            })
+            .catch(() => {
+                // Keep timezone city on error, show — for IP
+                setDevices([{ id: 1, name: deviceName, location: tzCity, current: true, ip: '—' }]);
+            });
     }, []);
 
     const handleUpdateProfile = async (e: React.FormEvent) => {
@@ -890,30 +906,50 @@ export default function Settings() {
                                     </div>
 
                                     <div className="space-y-4 max-w-3xl">
-                                        {devices.map((device) => (
-                                            <div key={device.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-white/10 transition-all">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
-                                                        <i className={`text-xl text-gray-300 ${device.name.includes('iPhone') ? 'ri-smartphone-line' : device.name.includes('PC') ? 'ri-computer-line' : 'ri-tv-line'}`}></i>
+                                        {devices.map((device) => {
+                                            const ua = window.navigator.userAgent;
+                                            const isPhone = /iPhone|Android/.test(ua) || device.name.includes('iOS') || device.name.includes('Android');
+                                            const isMac = device.name.includes('Mac');
+                                            const isWindows = device.name.includes('Windows');
+                                            const isLinux = device.name.includes('Linux');
+                                            const iconClass = isPhone ? 'ri-smartphone-line'
+                                                : isMac ? 'ri-mac-line'
+                                                : isWindows ? 'ri-computer-line'
+                                                : isLinux ? 'ri-terminal-box-line'
+                                                : 'ri-tv-line';
+                                            return (
+                                            <div key={device.id} className="flex items-center justify-between p-5 bg-white/5 rounded-xl border border-white/8 hover:border-white/15 transition-all gap-4">
+                                                <div className="flex items-center gap-4 min-w-0">
+                                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border border-violet-500/20 flex items-center justify-center flex-shrink-0">
+                                                        <i className={`text-xl text-violet-300 ${iconClass}`}></i>
                                                     </div>
-                                                    <div>
-                                                        <h3 className="font-medium text-white flex items-center gap-2">
+                                                    <div className="min-w-0">
+                                                        <h3 className="font-semibold text-white flex items-center gap-2 flex-wrap">
                                                             {device.name}
-                                                            {device.current && <span className="text-[10px] bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded font-bold uppercase">{t('settings.current')}</span>}
+                                                            {device.current && <span className="text-[10px] bg-green-500/20 text-green-300 border border-green-500/30 px-1.5 py-0.5 rounded font-bold uppercase">{t('settings.current')}</span>}
                                                         </h3>
-                                                        <p className="text-xs text-gray-500">{device.location} • {device.ip}</p>
+                                                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                                            <span className="text-xs text-gray-400">{device.location}</span>
+                                                            <span className="text-gray-600 text-xs">•</span>
+                                                            <code className={`text-xs font-mono px-1.5 py-0.5 rounded ${device.ip === 'Loading...' ? 'text-gray-500 bg-white/5 animate-pulse' : 'text-cyan-300 bg-cyan-500/10 border border-cyan-500/20'}`}>
+                                                                {device.ip}
+                                                            </code>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 {!device.current && (
                                                     <button
                                                         onClick={() => handleRemoveDevice(device.id)}
-                                                        className="text-red-400 hover:text-red-300 text-sm font-medium hover:underline"
+                                                        className="text-red-400 hover:text-red-300 text-sm font-medium hover:underline flex-shrink-0"
                                                     >
                                                         {t('settings.logOut')}
                                                     </button>
                                                 )}
                                             </div>
-                                        ))}
+                                            );
+                                        })}
+                                    </div>
+
                                     </div>
                                 </div>
                             )}
