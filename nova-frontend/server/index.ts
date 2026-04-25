@@ -1,4 +1,3 @@
-// Triggers a restart
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { animeRouter } from './routes/anime';
@@ -10,11 +9,9 @@ import { stripeRouter } from './routes/stripe';
 
 const app = new Hono();
 
-const corsOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:3000')
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean);
-const corsOriginConfig = corsOrigins.length > 0 ? corsOrigins : '*';
+const corsOriginConfig = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean)
+  : '*';
 
 // Enable CORS for frontend
 app.use('/*', cors({

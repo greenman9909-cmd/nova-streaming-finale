@@ -33,7 +33,7 @@ tmdbRouter.get('/*', async (c) => {
   }
 
   const fullPath = c.req.path;
-  const proxiedPath = fullPath.replace(/^\/api\/tmdb/, '') || '/';
+  const proxiedPath = fullPath.replace(/^\/(api\/)?tmdb/, '') || '/';
 
   if (!ALLOWED_PATH.test(proxiedPath) || proxiedPath.includes('..')) {
     return c.json({ error: 'Invalid TMDB path' }, 400);
