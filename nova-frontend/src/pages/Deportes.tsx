@@ -97,8 +97,6 @@ const Deportes = () => {
         const queue = [...list];
         const validIds = new Set<string>();
         const sources: Record<string, { source: string; id: string }> = {};
-        const total = queue.length;
-        let checked = 0;
         let active = 0;
         const limit = 6;
 
@@ -131,10 +129,6 @@ const Deportes = () => {
                     checkMatch(match)
                         .catch(() => null)
                         .finally(() => {
-                            checked += 1;
-                            if (total > 0) {
-                                setVerifyMessage(`Verificando streams ${checked}/${total}...`);
-                            }
                             active -= 1;
                             next();
                         });
@@ -161,26 +155,23 @@ const Deportes = () => {
 
                 const safeLive = live.filter((m) => m && m.id && m.title && hasSource(m));
                 const safeToday = today.filter((m) => m && m.id && m.title && hasSource(m));
-                const candidates = dedupeMatches([...safeLive, ...safeToday]);
 
-                if (candidates.length > 0) {
-                    setVerifyMessage(`Verificando streams 0/${candidates.length}...`);
-                    const { validIds, validSources } = await validateMatches(candidates);
-                    setValidSources(validSources);
-                    setLiveMatches(safeLive.filter((m) => validIds.has(m.id)));
-                    setTodayMatches(safeToday.filter((m) => validIds.has(m.id)));
-                } else {
-                    setLiveMatches([]);
-                    setTodayMatches([]);
-                }
-
+                setLiveMatches(safeLive);
+                setTodayMatches(safeToday);
                 setCategories(cats);
+
+                // Validate top matches in background to prefer working sources on click
+                const candidates = dedupeMatches([...safeLive, ...safeToday]).slice(0, 30);
+                if (candidates.length > 0) {
+                    validateMatches(candidates).then(({ validSources }) => {
+                        setValidSources(validSources);
+                    }).catch(() => null);
+                }
             } catch (err) {
                 console.error('Sports load failed', err);
                 setErrorMessage('No pudimos cargar los deportes.');
             } finally {
                 setIsLoading(false);
-                setTimeout(() => setVerifyMessage(null), 1200);
             }
         };
         init();
@@ -235,24 +226,33 @@ const Deportes = () => {
         }
         setVerifyingId(match.id);
         setVerifyMessage('Verificando streams activos...');
-        try {
-            const preferred = validSources[match.id];
-            const source = preferred || match.sources[0];
-            const streams = await getStreams(source.source, source.id);
-            if (!streams || streams.length === 0) {
-                setVerifyMessage('No hay streams activos. Intenta mas tarde.');
-                removeMatch(match.id);
-                return;
+
+        const preferred = validSources[match.id];
+        const ordered = preferred
+            ? [preferred, ...match.sources.filter((s) => !(s.source === preferred.source && s.id === preferred.id))]
+            : [...match.sources];
+
+        for (const source of ordered) {
+            try {
+                const streams = await getStreams(source.source, source.id);
+                if (streams && streams.length > 0) {
+                    setVerifyingId(null);
+                    setVerifyMessage(null);
+                    navigate(
+                        `/deportes/watch/${source.source}/${source.id}?title=${encodeURIComponent(match.title)}&category=${match.category}`,
+                        { state: { sources: match.sources, matchTitle: match.title, category: match.category } }
+                    );
+                    return;
+                }
+            } catch (err) {
+                console.warn('Source failed, trying next', source, err);
             }
-            navigate(`/deportes/watch/${source.source}/${source.id}?title=${encodeURIComponent(match.title)}&category=${match.category}`);
-        } catch (err) {
-            console.error('Stream check failed', err);
-            setVerifyMessage('No hay streams activos. Intenta mas tarde.');
-            removeMatch(match.id);
-        } finally {
-            setTimeout(() => setVerifyMessage(null), 2500);
-            setVerifyingId(null);
         }
+
+        setVerifyMessage('No hay streams activos. Intenta mas tarde.');
+        removeMatch(match.id);
+        setTimeout(() => setVerifyMessage(null), 2500);
+        setVerifyingId(null);
     };
 
     if (isLoading) {

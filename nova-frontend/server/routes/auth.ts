@@ -4,6 +4,32 @@ import { Hono } from 'hono';
 const authRouter = new Hono();
 const isProd = process.env.NODE_ENV === 'production';
 
+authRouter.post('/verify-captcha', async (c) => {
+    const { token } = await c.req.json();
+    const secret = process.env.TURNSTILE_SECRET_KEY;
+
+    if (!secret) {
+        // No key configured — skip verification (dev without .env setup)
+        return c.json({ success: true });
+    }
+
+    const form = new FormData();
+    form.append('secret', secret);
+    form.append('response', token);
+
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        body: form,
+    });
+
+    const data = await res.json() as { success: boolean };
+    if (!data.success) {
+        return c.json({ success: false, message: 'Security check failed. Please try again.' }, 403);
+    }
+
+    return c.json({ success: true });
+});
+
 authRouter.use('/*', async (c, next) => {
     if (isProd) {
         return c.json({ success: false, message: 'Auth is disabled in production.' }, 501);

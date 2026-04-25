@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { getStreams, isSportsBackendDown, Stream } from '../services/sportsService';
 import EnhancedPlayer from '../components/EnhancedPlayer';
+
+type MatchSource = { source: string; id: string };
 
 export default function SportsWatch() {
     const { source, streamId } = useParams<{ source: string; streamId: string }>();
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const allSources: MatchSource[] = (location.state as any)?.sources || [];
 
     const [streams, setStreams] = useState<Stream[]>([]);
     const [selectedStream, setSelectedStream] = useState<Stream | null>(null);
@@ -86,9 +91,30 @@ export default function SportsWatch() {
                                 <i className="ri-server-line text-nova-accent"></i>
                                 Source:
                             </span>
-                            <div className="flex flex-wrap gap-2 text-sm text-gray-400">
-                                {streams.length > 0 ? "Múltiples streams disponibles" : "Cargando fuentes..."}
-                            </div>
+                            {allSources.length > 0 ? (
+                                <div className="flex flex-wrap gap-2 text-sm">
+                                    {allSources.map((s) => (
+                                        <button
+                                            key={`${s.source}-${s.id}`}
+                                            onClick={() => navigate(
+                                                `/deportes/watch/${s.source}/${s.id}?title=${encodeURIComponent(title)}&category=${category}`,
+                                                { state: location.state }
+                                            )}
+                                            className={`px-3 py-1.5 rounded-lg font-bold uppercase text-xs transition-all ${
+                                                s.source === source
+                                                    ? 'bg-nova-accent text-white'
+                                                    : 'bg-white/5 text-gray-300 hover:bg-white/10'
+                                            }`}
+                                        >
+                                            {s.source}
+                                        </button>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="flex flex-wrap gap-2 text-sm text-gray-400">
+                                    {streams.length > 0 ? 'Múltiples streams disponibles' : 'Cargando fuentes...'}
+                                </div>
+                            )}
                         </div>
 
                         {/* Controls */}

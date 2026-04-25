@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { useSettings } from '../context/SettingsContext';
+import { isDisposableEmail } from '../utils/disposableEmail';
+import TurnstileWidget from '../components/Turnstile';
 
 export default function Signup() {
     const { t } = useSettings();
@@ -13,6 +15,10 @@ export default function Signup() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [showModal, setShowModal] = useState(false);
+    const [turnstileToken, setTurnstileToken] = useState('');
+
+    const handleTurnstileVerify = useCallback((token: string) => setTurnstileToken(token), []);
+    const handleTurnstileExpire = useCallback(() => setTurnstileToken(''), []);
 
     // Unused for now, but ready for post-signup redirect if auto-login
     // const navigate = useNavigate(); 
@@ -22,11 +28,37 @@ export default function Signup() {
         setIsLoading(true);
         setError('');
 
+        if (isDisposableEmail(email)) {
+            setError('Por favor usa un correo válido. Las direcciones desechables no están permitidas.');
+            setIsLoading(false);
+            return;
+        }
+
         try {
+            if (import.meta.env.VITE_TURNSTILE_SITE_KEY) {
+                if (!turnstileToken) {
+                    setError('Please complete the security check.');
+                    setIsLoading(false);
+                    return;
+                }
+                const verifyRes = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/auth/verify-captcha`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: turnstileToken }),
+                });
+                if (!verifyRes.ok) {
+                    setError('Security check failed. Please try again.');
+                    setTurnstileToken('');
+                    setIsLoading(false);
+                    return;
+                }
+            }
+
             const { error } = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
+                    emailRedirectTo: `${window.location.origin}/login`,
                     data: {
                         username: username,
                     },
@@ -138,11 +170,12 @@ export default function Signup() {
                             </div>
                         )}
 
+                        <TurnstileWidget onVerify={handleTurnstileVerify} onExpire={handleTurnstileExpire} />
 
                         {/* Submit */}
                         <button
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || (!!import.meta.env.VITE_TURNSTILE_SITE_KEY && !turnstileToken)}
                             className="w-full py-4 rounded-xl gradient-accent text-white font-semibold text-lg hover:opacity-90 transition-opacity glow-accent disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center mt-4"
                         >
                             {isLoading ? (

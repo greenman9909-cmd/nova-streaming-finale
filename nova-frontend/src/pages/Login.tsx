@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useSettings } from '../context/SettingsContext';
+import TurnstileWidget from '../components/Turnstile';
 
 export default function Login() {
     const { t } = useSettings();
@@ -12,7 +13,11 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [infoMessage, setInfoMessage] = useState('');
+    const [turnstileToken, setTurnstileToken] = useState('');
     const navigate = useNavigate();
+
+    const handleTurnstileVerify = useCallback((token: string) => setTurnstileToken(token), []);
+    const handleTurnstileExpire = useCallback(() => setTurnstileToken(''), []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -21,6 +26,25 @@ export default function Login() {
         setInfoMessage('');
 
         try {
+            if (import.meta.env.VITE_TURNSTILE_SITE_KEY) {
+                if (!turnstileToken) {
+                    setError('Please complete the security check.');
+                    setIsLoading(false);
+                    return;
+                }
+                const verifyRes = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/auth/verify-captcha`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: turnstileToken }),
+                });
+                if (!verifyRes.ok) {
+                    setError('Security check failed. Please try again.');
+                    setTurnstileToken('');
+                    setIsLoading(false);
+                    return;
+                }
+            }
+
             const { error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
@@ -194,10 +218,12 @@ export default function Login() {
                             </div>
                         )}
 
+                        <TurnstileWidget onVerify={handleTurnstileVerify} onExpire={handleTurnstileExpire} />
+
                         {/* Submit */}
                         <button
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || (!!import.meta.env.VITE_TURNSTILE_SITE_KEY && !turnstileToken)}
                             className="w-full py-4 rounded-xl gradient-accent text-white font-semibold text-lg hover:opacity-90 transition-opacity glow-accent disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                         >
                             {isLoading ? (
