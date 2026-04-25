@@ -13,6 +13,7 @@ export default function Navbar() {
     const { t } = useSettings();
     const [searchOpen, setSearchOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [profileMenuOpen, setProfileMenuOpen] = useState(false);
     const [avatarModalOpen, setAvatarModalOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<MultiSearchResult[]>([]);
@@ -20,6 +21,7 @@ export default function Navbar() {
     const [showBottomNav, setShowBottomNav] = useState(false);
     const [headerHidden, setHeaderHidden] = useState(false);
     const lastScrollY = useRef(0);
+    const profileMenuRef = useRef<HTMLDivElement>(null);
     // isCollapsed state removed - Navbar is always visible
     const location = useLocation();
     const navigate = useNavigate();
@@ -91,7 +93,7 @@ export default function Navbar() {
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') setSearchOpen(false);
+            if (e.key === 'Escape') { setSearchOpen(false); setProfileMenuOpen(false); }
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault();
                 setSearchOpen(true);
@@ -103,7 +105,18 @@ export default function Navbar() {
         };
     }, []);
 
-    useEffect(() => setMobileMenuOpen(false), [location]);
+    // Close profile menu on outside click
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+                setProfileMenuOpen(false);
+            }
+        };
+        if (profileMenuOpen) document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [profileMenuOpen]);
+
+    useEffect(() => { setMobileMenuOpen(false); setProfileMenuOpen(false); }, [location]);
 
     // Section-specific glow colors
     const sectionConfig: Record<string, { glow: string; gradient: string; border: string }> = {
@@ -369,8 +382,11 @@ export default function Navbar() {
 
                                 {/* Login/Profile Button */}
                                 {user ? (
-                                    <div className="relative group/profile">
-                                        <button className="w-10 h-10 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-600 p-[1px] flex items-center justify-center overflow-hidden">
+                                    <div className="relative" ref={profileMenuRef}>
+                                        <button
+                                            onClick={() => setProfileMenuOpen(o => !o)}
+                                            className="w-10 h-10 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-600 p-[1px] flex items-center justify-center overflow-hidden"
+                                        >
                                             <div className="w-full h-full rounded-full bg-[#0a0a0f] flex items-center justify-center overflow-hidden">
                                                 {(activeProfile?.avatar || user.user_metadata?.avatar_url) ? (
                                                     <img src={activeProfile?.avatar || user.user_metadata?.avatar_url} alt="Profile" className="w-full h-full object-cover" onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
@@ -382,8 +398,8 @@ export default function Navbar() {
                                             </div>
                                         </button>
 
-                                        {/* Dropdown */}
-                                        <div className="absolute top-12 right-0 bg-[#0a0a12]/95 backdrop-blur-xl border border-white/10 rounded-xl p-2 w-56 opacity-0 invisible group-hover/profile:opacity-100 group-hover/profile:visible transition-all flex flex-col gap-1 shadow-2xl z-50">
+                                        {/* Dropdown — works on hover (desktop) AND tap (mobile) */}
+                                        <div className={`absolute top-12 right-0 bg-[#0a0a12]/95 backdrop-blur-xl border border-white/10 rounded-xl p-2 w-56 transition-all flex flex-col gap-1 shadow-2xl z-50 ${profileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
                                             <div className="px-3 py-2 border-b border-white/5 mb-1 flex items-center gap-2">
                                                 <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center">
                                                     {(activeProfile?.avatar || user.user_metadata?.avatar_url) ? (

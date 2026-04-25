@@ -3438,3 +3438,173 @@ main {
 }
 
 html { scroll-behavior: smooth; }
+
+/* ═══════════════════════════════════════════════════════
+   NOVA MOBILE — COMPREHENSIVE GLITCH FIXES
+   Fixes all touch / small-screen UI regressions
+   ═══════════════════════════════════════════════════════ */
+
+/* 1. Prevent search bar from overflowing navbar on mobile */
+@media (max-width: 767px) {
+  .search-bar-container {
+    max-width: calc(100vw - 180px) !important;
+  }
+  .search-bar-container.w-\[380px\],
+  div[class*="w-[380px]"] {
+    width: min(240px, calc(100vw - 180px)) !important;
+  }
+}
+
+/* 2. Mobile menu — add max-height + scroll so it never clips off-screen */
+@media (max-width: 1023px) {
+  /* The slide-down menu panel */
+  .fixed.inset-0.z-40 > div:last-child {
+    max-height: calc(100dvh - 96px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* 3. Spotlight: collapse to single column on phone-sized screens */
+@media (max-width: 639px) {
+  .home-spotlight {
+    grid-template-columns: 1fr;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .spotlight-card {
+    min-height: 220px;
+  }
+}
+
+/* 4. Sports hero — don't let it crush on very short phones */
+@media (max-width: 767px) {
+  .sports-hero {
+    height: auto;
+    min-height: min(420px, 70svh);
+  }
+  .sports-hero-content {
+    padding: 0 5% 40px;
+  }
+}
+
+/* 5. Fix category bar negative margin causing overlap on small screens */
+@media (max-width: 900px) {
+  .home-category-bar {
+    margin-top: 0 !important;
+  }
+}
+
+/* 6. Touch-action: let horizontal tracks scroll freely on iOS */
+.content-row-track,
+.critics-track,
+.topten-track,
+.newweek-track,
+.sports-rail,
+.home-category-track {
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 7. Hide scroll-arrow buttons on touch devices — they don't work with touch */
+@media (hover: none) and (pointer: coarse) {
+  .content-row-arrow {
+    display: none !important;
+  }
+  .content-row-fade {
+    opacity: 0 !important;
+  }
+}
+
+/* 8. Disable 3D/translateY hover effects on touch (they stick after tap) */
+@media (hover: none) and (pointer: coarse) {
+  .card-3d:hover,
+  .card-premium:hover,
+  .hover-lift:hover,
+  .topten-item:hover .topten-card,
+  .critic-card:hover,
+  .newweek-card:hover,
+  .sports-card:hover,
+  .spotlight-card:hover,
+  .sports-btn-primary:hover,
+  .sports-btn-ghost:hover,
+  .sports-chip:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  /* Keep hover sheen overlays hidden on touch */
+  .critic-card:hover::after,
+  .newweek-card:hover::after {
+    opacity: 0 !important;
+  }
+}
+
+/* 9. Profile dropdown — make it work on tap via focus-within on mobile */
+@media (hover: none) and (pointer: coarse) {
+  /* The profile button group uses group-hover — replicate with :focus-within */
+  .group\/profile:focus-within > div {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  /* Ensure tapping the profile avatar button toggles the dropdown */
+  .group\/profile > button {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* 10. Prevent hero video from causing horizontal overflow on narrow phones */
+@media (max-width: 480px) {
+  .hero-video-embed {
+    --hero-video-scale: 1.0;
+  }
+}
+
+/* 11. General safe-area inset padding for notched phones (iPhone X+) */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .fixed.bottom-6 {
+    bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* 12. Topten numbers — shrink on very small phones to prevent overflow */
+@media (max-width: 400px) {
+  .topten-num {
+    font-size: 4rem;
+    margin-right: -16px;
+  }
+  .topten-card {
+    width: 100px;
+  }
+}
+
+/* 13. Home band head — stack vertically on phone */
+@media (max-width: 480px) {
+  .home-band-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
+/* 14. Sports section panels — reduce side padding on phones */
+@media (max-width: 640px) {
+  .sports-section {
+    padding: 0 4%;
+  }
+  .sports-section-panel {
+    padding: 16px 16px 12px;
+    border-radius: 18px;
+  }
+  .sports-card {
+    width: 190px;
+  }
+}
+
+/* 15. Prevent long words/titles from breaking layout */
+.spotlight-title,
+.sports-hero-title,
+.content-row-title,
+.home-band-title {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
