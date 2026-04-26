@@ -233,7 +233,7 @@ export default function Navbar() {
                             </div>
 
                             {/* Center: Explicit Navigation Menu */}
-                            <div className="hidden md:flex items-center justify-center gap-6">
+                            <div className="hidden md:flex items-center justify-center gap-3">
                                 <Link to="/" className={`text-sm font-semibold tracking-wide transition-colors ${isActive('/') ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'text-gray-300 hover:text-white'}`}>
                                     Inicio
                                 </Link>
@@ -249,18 +249,16 @@ export default function Navbar() {
                                 <Link to="/deportes" className={`text-sm font-semibold tracking-wide transition-colors ${isActive('/deportes') ? 'text-green-400 drop-shadow-[0_0_8px_rgba(74,222,128,0.5)]' : 'text-gray-300 hover:text-green-300'}`}>
                                     Deportes
                                 </Link>
-                                <Link to="/comics" className={`text-sm font-semibold tracking-wide transition-colors flex items-center gap-1 ${isActive('/comics') ? 'text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.5)]' : 'text-gray-300 hover:text-orange-300'}`}>
-                                    <i className="ri-book-2-line text-xs" />
+                                <Link to="/comics" className={`text-sm font-semibold tracking-wide transition-colors ${isActive('/comics') ? 'text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.5)]' : 'text-gray-300 hover:text-orange-300'}`}>
                                     Comics
                                 </Link>
-                                <Link to="/novedades" className={`text-sm font-semibold tracking-wide transition-colors flex items-center gap-1 ${isActive('/novedades') ? 'text-fuchsia-400 drop-shadow-[0_0_8px_rgba(217,70,239,0.5)]' : 'text-gray-300 hover:text-fuchsia-300'}`}>
-                                    <i className="ri-fire-line text-xs" />
+                                <Link to="/novedades" className={`text-sm font-semibold tracking-wide transition-colors ${isActive('/novedades') ? 'text-fuchsia-400 drop-shadow-[0_0_8px_rgba(217,70,239,0.5)]' : 'text-gray-300 hover:text-fuchsia-300'}`}>
                                     Novedades
                                 </Link>
-                                <Link to="/mylist" className={`text-sm font-semibold tracking-wide transition-colors ${isActive('/mylist') ? 'text-rose-400 drop-shadow-[0_0_8px_rgba(244,114,182,0.5)]' : 'text-gray-300 hover:text-rose-300'}`}>
+                                <Link to="/mylist" className={`hidden lg:block text-sm font-semibold tracking-wide transition-colors ${isActive('/mylist') ? 'text-rose-400 drop-shadow-[0_0_8px_rgba(244,114,182,0.5)]' : 'text-gray-300 hover:text-rose-300'}`}>
                                     Mi lista
                                 </Link>
-                                <Link to="/history" className={`text-sm font-semibold tracking-wide transition-colors ${isActive('/history') ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]' : 'text-gray-300 hover:text-amber-300'}`}>
+                                <Link to="/history" className={`hidden lg:block text-sm font-semibold tracking-wide transition-colors ${isActive('/history') ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]' : 'text-gray-300 hover:text-amber-300'}`}>
                                     Historial
                                 </Link>
                                 <Link to="/plans" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#00a8e1] to-[#0080b3] text-white text-xs font-bold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300">
@@ -270,9 +268,9 @@ export default function Navbar() {
                             </div>
 
                             {/* Right: Actions (Socials + Search + Profile) */}
-                            <div className="flex items-center justify-end gap-3 md:gap-4">
+                            <div className="flex items-center justify-end gap-2 md:gap-2">
                                 {/* Explicit Social Icons (Visible on md+) */}
-                                <div className="hidden md:flex items-center gap-3 mr-2">
+                                <div className="hidden xl:flex items-center gap-2 mr-1">
                                     <a href="#" className="text-gray-400 hover:text-white transition-colors"><i className="ri-instagram-line text-lg"></i></a>
                                     <a href="#" className="text-gray-400 hover:text-white transition-colors"><i className="ri-twitter-x-line text-lg"></i></a>
                                     <a href="#" className="text-gray-400 hover:text-white transition-colors"><i className="ri-youtube-line text-lg"></i></a>

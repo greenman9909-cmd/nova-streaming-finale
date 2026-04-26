@@ -15,6 +15,18 @@ export interface Subscription {
     currentPeriodEnd: string | null;
 }
 
+export type PlanTier = 'none' | 'free' | 'basic' | 'standard' | 'nova-plus';
+
+const FREE_DAILY_LIMIT_MINUTES = 180;
+
+function getFreeWatchKey(): string {
+    return `nova_free_watch_${new Date().toISOString().split('T')[0]}`;
+}
+
+function getFreeMinutesUsed(): number {
+    return parseInt(localStorage.getItem(getFreeWatchKey()) || '0', 10);
+}
+
 interface AuthContextType {
     session: Session | null;
     user: User | null;
@@ -37,6 +49,11 @@ interface AuthContextType {
     subscription: Subscription | null;
     isPremium: boolean;
     refreshSubscription: () => Promise<void>;
+    planTier: PlanTier;
+    canAccessComics: boolean;
+    freeMinutesUsedToday: number;
+    freeMinutesRemaining: number;
+    recordWatchMinutes: (minutes: number) => void;
 }
 
 export interface WatchlistItem {
@@ -71,6 +88,11 @@ const AuthContext = createContext<AuthContextType>({
     subscription: null,
     isPremium: false,
     refreshSubscription: async () => { },
+    planTier: 'none',
+    canAccessComics: false,
+    freeMinutesUsedToday: 0,
+    freeMinutesRemaining: FREE_DAILY_LIMIT_MINUTES,
+    recordWatchMinutes: () => { },
 });
 
 export const defaultAvatarFor = (name: string, isKid: boolean) => {
@@ -475,14 +497,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
-    const isPremium = subscription !== null && ['active', 'trialing', 'deal'].includes(subscription.status);
+    const isPremium = subscription !== null && ['active', 'trialing', 'deal', 'canceling'].includes(subscription.status);
+
+    const planTier: PlanTier = (() => {
+        if (!user) return 'none';
+        if (!isPremium || !subscription) return 'free';
+        const p = subscription.planId;
+        if (p === 'nova-plus') return 'nova-plus';
+        if (p === 'standard') return 'standard';
+        return 'basic';
+    })();
+
+    const canAccessComics = planTier === 'nova-plus';
+
+    const freeMinutesUsedToday = planTier === 'free' ? getFreeMinutesUsed() : 0;
+    const freeMinutesRemaining = Math.max(0, FREE_DAILY_LIMIT_MINUTES - freeMinutesUsedToday);
+
+    const recordWatchMinutes = (minutes: number) => {
+        const key = getFreeWatchKey();
+        const current = parseInt(localStorage.getItem(key) || '0', 10);
+        localStorage.setItem(key, String(current + minutes));
+    };
 
     return (
         <AuthContext.Provider value={{
             session, user, activeProfile, profiles, loading, signOut, selectProfile,
             addProfile, editProfile, deleteProfile, updateProfile,
             watchlist, watchlistStatus, watchlistError, refreshWatchlist, addToWatchlist, removeFromWatchlist, isInWatchlist,
-            subscription, isPremium, refreshSubscription
+            subscription, isPremium, refreshSubscription,
+            planTier, canAccessComics, freeMinutesUsedToday, freeMinutesRemaining, recordWatchMinutes,
         }}>
             {children}
         </AuthContext.Provider>

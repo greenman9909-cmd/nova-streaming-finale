@@ -1,27 +1,28 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { usePlan } from '../hooks/usePlan';
 
 const PLANS = [
     {
-        id: 'basic',
-        name: 'Basic',
+        id: 'free',
+        name: 'Free',
         badge: null,
-        monthly: 4.99,
-        yearly: 44.99,
-        yearlySavings: 15,
-        color: 'from-slate-500 to-slate-700',
-        accentColor: 'text-slate-300',
-        borderColor: 'border-slate-500/40',
-        glowColor: 'rgba(100,116,139,0.15)',
+        monthly: 0,
+        yearly: 0,
+        yearlySavings: 0,
+        color: 'from-gray-500 to-gray-700',
+        accentColor: 'text-gray-300',
+        borderColor: 'border-gray-600/30',
+        glowColor: 'transparent',
+        isFree: true,
         features: [
-            { icon: 'ri-hd-line', text: '720p HD quality' },
-            { icon: 'ri-device-line', text: '1 screen at a time' },
-            { icon: 'ri-movie-line', text: 'Movies & TV shows' },
-            { icon: 'ri-download-line', text: 'No downloads' },
-            { icon: 'ri-advertisement-line', text: 'With ads' },
+            { icon: 'ri-hd-line',     text: '720p HD' },
+            { icon: 'ri-time-line',   text: '3 horas de visualización al día' },
+            { icon: 'ri-movie-line',  text: 'Series, Anime y Películas' },
+            { icon: 'ri-device-line', text: '1 pantalla' },
         ],
-        missing: ['Downloads', 'Dolby Atmos', 'Simultaneous streams'],
+        missing: ['Comics & Manhwa', 'Sin límite de tiempo', 'Full HD 1080p', 'Sin anuncios'],
     },
     {
         id: 'standard',
@@ -30,18 +31,20 @@ const PLANS = [
         monthly: 9.99,
         yearly: 89.99,
         yearlySavings: 25,
+        isFree: false,
         color: 'from-violet-600 to-indigo-700',
         accentColor: 'text-violet-300',
         borderColor: 'border-violet-500/50',
         glowColor: 'rgba(139,92,246,0.2)',
         features: [
-            { icon: 'ri-hd-line', text: 'Full HD 1080p' },
-            { icon: 'ri-device-line', text: '2 screens at a time' },
-            { icon: 'ri-movie-line', text: 'Movies & TV shows' },
-            { icon: 'ri-download-line', text: '25 downloads/month' },
-            { icon: 'ri-spam-2-line', text: 'Ad-free' },
+            { icon: 'ri-hd-line',       text: 'Full HD 1080p' },
+            { icon: 'ri-time-line',     text: 'Sin límite de tiempo' },
+            { icon: 'ri-movie-line',    text: 'Series, Anime y Películas' },
+            { icon: 'ri-device-line',   text: '2 pantallas' },
+            { icon: 'ri-download-line', text: '25 descargas/mes' },
+            { icon: 'ri-spam-2-line',   text: 'Sin anuncios' },
         ],
-        missing: ['Dolby Atmos', '4K Ultra HD'],
+        missing: ['Comics & Manhwa', 'Dolby Atmos'],
     },
     {
         id: 'nova-plus',
@@ -50,18 +53,21 @@ const PLANS = [
         monthly: 14.99,
         yearly: 134.99,
         yearlySavings: 25,
+        isFree: false,
         color: 'from-cyan-500 to-blue-600',
         accentColor: 'text-cyan-300',
         borderColor: 'border-cyan-400/50',
         glowColor: 'rgba(6,182,212,0.25)',
         features: [
-            { icon: 'ri-4k-line', text: '4K Ultra HD + HDR' },
-            { icon: 'ri-device-line', text: '4 screens at a time' },
-            { icon: 'ri-movie-line', text: 'All content + exclusives' },
-            { icon: 'ri-download-line', text: 'Unlimited downloads' },
-            { icon: 'ri-spam-2-line', text: 'Ad-free' },
-            { icon: 'ri-music-2-line', text: 'Dolby Atmos audio' },
-            { icon: 'ri-vip-crown-line', text: 'Early access & premieres' },
+            { icon: 'ri-hd-line',       text: 'Full HD 1080p + HDR' },
+            { icon: 'ri-time-line',     text: 'Sin límite de tiempo' },
+            { icon: 'ri-movie-line',    text: 'Todo el contenido + exclusivos' },
+            { icon: 'ri-book-2-fill',   text: 'Comics & Manhwa' },
+            { icon: 'ri-device-line',   text: '4 pantallas' },
+            { icon: 'ri-download-line', text: 'Descargas ilimitadas' },
+            { icon: 'ri-spam-2-line',   text: 'Sin anuncios' },
+            { icon: 'ri-music-2-line',  text: 'Audio Dolby Atmos' },
+            { icon: 'ri-vip-crown-line',text: 'Acceso anticipado & estrenos' },
         ],
         missing: [],
     },
@@ -69,6 +75,7 @@ const PLANS = [
 
 export default function Plans() {
     const { user, subscription, isPremium, refreshSubscription } = useAuth();
+    const { tier } = usePlan();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [interval, setInterval] = useState<'monthly' | 'yearly'>('monthly');
@@ -261,10 +268,10 @@ export default function Plans() {
                                     7 días de <span className="text-amber-400">NOVA+</span> por solo <span className="text-amber-300">€1</span>
                                 </h2>
                                 <p className="text-white/55 text-sm leading-relaxed">
-                                    4K Ultra HD · Ad-free · Dolby Atmos · Acceso completo. Sin compromiso — un único pago de €1.
+                                    Full HD 1080p · Sin anuncios · Dolby Atmos · Acceso completo. Sin compromiso — un único pago de €1.
                                 </p>
                                 <div className="flex flex-wrap items-center gap-3 mt-3 justify-center md:justify-start">
-                                    {['4K + HDR', 'Sin anuncios', 'Dolby Atmos', '4 pantallas'].map(f => (
+                                    {['1080p + HDR', 'Sin anuncios', 'Dolby Atmos', '4 pantallas'].map(f => (
                                         <span key={f} className="flex items-center gap-1 text-[11px] font-semibold text-amber-300/80">
                                             <i className="ri-check-line text-amber-400" />{f}
                                         </span>
@@ -341,6 +348,23 @@ export default function Plans() {
                                 </div>
 
                                 {/* CTA button */}
+                                {plan.isFree ? (
+                                    <button
+                                        onClick={() => !user && navigate('/signup')}
+                                        disabled={!!user}
+                                        className={`w-full py-3 rounded-xl font-bold text-sm transition-all mb-7 flex items-center justify-center gap-2
+                                            ${tier === 'free' || (user && !isPremium)
+                                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 cursor-default'
+                                                : 'bg-white/8 hover:bg-white/14 text-white border border-white/12 hover:border-white/25'
+                                            }`}
+                                    >
+                                        {user ? (
+                                            <><i className="ri-checkbox-circle-fill" /> Tu plan actual</>
+                                        ) : (
+                                            <><i className="ri-user-add-line" /> Registrarse gratis</>
+                                        )}
+                                    </button>
+                                ) : (
                                 <button
                                     onClick={() => handleCheckout(plan.id)}
                                     disabled={!!loadingPlan || current}
@@ -349,7 +373,7 @@ export default function Plans() {
                                             ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 cursor-default'
                                             : isNovaPlus
                                             ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:brightness-110 shadow-lg shadow-cyan-500/20'
-                                            : 'bg-white/10 hover:bg-white/20 text-white border border-white/15 hover:border-white/30'
+                                            : 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:brightness-110 shadow-lg shadow-violet-500/20'
                                         }
                                         ${loadingPlan === plan.id ? 'opacity-70 cursor-wait' : ''}
                                         ${loadingPlan && loadingPlan !== plan.id ? 'opacity-40 cursor-not-allowed' : ''}`}
@@ -359,11 +383,12 @@ export default function Plans() {
                                     ) : current ? (
                                         <><i className="ri-checkbox-circle-fill" /> Plan actual</>
                                     ) : !user ? (
-                                        'Comenzar gratis'
+                                        <>Empezar ahora <i className="ri-arrow-right-line" /></>
                                     ) : (
                                         <>Elegir {plan.name} <i className="ri-arrow-right-line" /></>
                                     )}
                                 </button>
+                                )}
 
                                 {/* Divider */}
                                 <div className="border-t border-white/5 mb-5" />

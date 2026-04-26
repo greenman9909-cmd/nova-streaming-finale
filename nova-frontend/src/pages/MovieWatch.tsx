@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { trackIntercomEvent } from '../components/IntercomProvider';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
     getMovieDetails,
     getSeriesDetails,
@@ -20,10 +20,13 @@ import {
 import EnhancedPlayer from '../components/EnhancedPlayer';
 import { useAuth } from '../context/AuthContext';
 import { saveProgress, getLocalProgress, buildResumeUrl, formatTime } from '../utils/watchProgress';
+import { usePlan } from '../hooks/usePlan';
 
 export default function MovieWatch() {
     const { type, id } = useParams<{ type: string; id: string }>();
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
+    const { canWatch, tier, minutesLeft, recordWatchMinutes } = usePlan();
+    const navigate = useNavigate();
 
     const [content, setContent] = useState<TMDBMovie | TMDBSeriesDetails | null>(null);
     const [episodes, setEpisodes] = useState<TMDBEpisode[]>([]);
@@ -388,6 +391,13 @@ export default function MovieWatch() {
         setSelectedEpisode(eps[0]?.episode_number || 1);
     };
 
+    // Track free-tier watch minutes (1 min per interval)
+    useEffect(() => {
+        if (tier !== 'free' || !canWatch || !playerReady) return;
+        const id = setInterval(() => recordWatchMinutes(1), 60000);
+        return () => clearInterval(id);
+    }, [tier, canWatch, playerReady]);
+
     const handleEpisodeClick = (epNum: number) => {
         setSelectedEpisode(epNum);
     };
@@ -401,6 +411,47 @@ export default function MovieWatch() {
     }
 
     if (!content) return null;
+
+    // Track free-tier watch minutes
+    // (effect runs after content loads — moved here as inline hook isn't allowed; handled via useEffect below)
+
+    // Auth / plan gate
+    if (!authLoading && !user) {
+        return (
+            <main className="min-h-screen bg-nova-bg flex items-center justify-center p-6">
+                <div className="max-w-md w-full text-center">
+                    <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-violet-500/15 border border-violet-400/20 flex items-center justify-center">
+                        <i className="ri-lock-line text-4xl text-violet-400" />
+                    </div>
+                    <h2 className="text-2xl font-black text-white mb-2">Inicia sesión para ver</h2>
+                    <p className="text-gray-400 text-sm mb-6">Necesitas una cuenta para acceder al contenido de Nova.</p>
+                    <div className="flex gap-3 justify-center">
+                        <button onClick={() => navigate('/login?redirect=' + location.pathname)} className="px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold hover:brightness-110 transition-all">Iniciar sesión</button>
+                        <button onClick={() => navigate('/signup')} className="px-6 py-3 rounded-xl bg-white/8 border border-white/10 text-white font-semibold hover:bg-white/12 transition-colors">Registrarse</button>
+                    </div>
+                </div>
+            </main>
+        );
+    }
+
+    if (!authLoading && user && !canWatch) {
+        return (
+            <main className="min-h-screen bg-nova-bg flex items-center justify-center p-6">
+                <div className="max-w-md w-full text-center">
+                    <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-orange-500/15 border border-orange-400/20 flex items-center justify-center">
+                        <i className="ri-time-line text-4xl text-orange-400" />
+                    </div>
+                    <h2 className="text-2xl font-black text-white mb-2">Límite diario alcanzado</h2>
+                    <p className="text-gray-400 text-sm mb-2">Has usado tus 3 horas gratuitas de hoy. Vuelve mañana o actualiza tu plan.</p>
+                    <p className="text-gray-600 text-xs mb-6">Minutos restantes hoy: {minutesLeft}</p>
+                    <div className="flex gap-3 justify-center">
+                        <button onClick={() => navigate('/plans')} className="px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-pink-500 text-white font-bold hover:brightness-110 transition-all"><i className="ri-vip-crown-fill mr-1" />Ver planes</button>
+                        <button onClick={() => navigate(-1)} className="px-6 py-3 rounded-xl bg-white/8 border border-white/10 text-white font-semibold hover:bg-white/12 transition-colors">Volver</button>
+                    </div>
+                </div>
+            </main>
+        );
+    }
 
     return (
         <main className={`min-h-screen bg-nova-bg pt-20 pb-12 transition-all duration-500 ${theaterMode ? 'bg-black' : ''}`}>

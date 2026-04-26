@@ -64,6 +64,22 @@ function ProfileGuard({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
 }
 
+// Guard requiring login to access watch content
+function WatchAuthGuard({ children }: { children: React.ReactNode }) {
+    const { user, loading } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        if (!loading && !user) {
+            navigate(`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`);
+        }
+    }, [user, loading, navigate, location.pathname, location.search]);
+
+    if (loading || !user) return <PageLoader />;
+    return <>{children}</>;
+}
+
 function App() {
     const showEmailPopup = import.meta.env.VITE_ENABLE_EMAIL_POPUP === 'true';
 
@@ -120,17 +136,17 @@ function App() {
                                     <Route path="/" element={<Home />} />
                                     <Route path="/anime" element={<Anime />} />
                                     <Route path="/anime/:id" element={<AnimeDetail />} />
-                                    <Route path="/anime/watch/:id" element={<AnimeWatch />} />
+                                    <Route path="/anime/watch/:id" element={<WatchAuthGuard><AnimeWatch /></WatchAuthGuard>} />
                                     <Route path="/peliculas" element={<Peliculas />} />
                                     <Route path="/series" element={<Series />} />
                                     <Route path="/deportes" element={<Deportes />} />
-                                    <Route path="/deportes/watch/:source/:streamId" element={<SportsWatch />} />
+                                    <Route path="/deportes/watch/:source/:streamId" element={<WatchAuthGuard><SportsWatch /></WatchAuthGuard>} />
                                     <Route path="/plans" element={<Plans />} />
                                     <Route path="/search" element={<Search />} />
                                     <Route path="/novedades" element={<Novedades />} />
                                     <Route path="/comics" element={<Comics />} />
-                                    <Route path="/watch/:type/:id" element={<MovieWatch />} />
-                                    <Route path="/watch/:episodeId" element={<Watch />} />
+                                    <Route path="/watch/:type/:id" element={<WatchAuthGuard><MovieWatch /></WatchAuthGuard>} />
+                                    <Route path="/watch/:episodeId" element={<WatchAuthGuard><Watch /></WatchAuthGuard>} />
                                     <Route path="/login" element={<Login />} />
                                     <Route path="/signup" element={<Signup />} />
                                     <Route path="/update-password" element={<UpdatePassword />} />

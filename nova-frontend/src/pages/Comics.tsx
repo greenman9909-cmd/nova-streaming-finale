@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import NovaLogo from '../components/NovaLogo';
+import { useAuth } from '../context/AuthContext';
+import { usePlan } from '../hooks/usePlan';
 
 const MANGA_API = 'https://manga-manwha-scrapper-nova.vercel.app';
 const MD        = 'https://api.mangadex.org';
@@ -329,8 +332,80 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
     );
 }
 
+// ── Plan Gate ─────────────────────────────────────────────────────────────────
+function ComicsGate({ isLoggedIn }: { isLoggedIn: boolean }) {
+    const navigate = useNavigate();
+    return (
+        <main className="min-h-screen bg-[#030305] flex items-center justify-center p-6">
+            <motion.div
+                className="max-w-lg w-full text-center"
+                initial={{ opacity: 0, y: 32 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            >
+                {/* Ambient glow */}
+                <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-orange-600/8 blur-[120px] rounded-full" />
+                </div>
+
+                <div className="relative">
+                    {/* Icon */}
+                    <div className="w-24 h-24 mx-auto mb-8 rounded-3xl
+                                    bg-gradient-to-br from-orange-500/20 to-pink-600/20
+                                    border border-orange-500/20
+                                    flex items-center justify-center
+                                    shadow-[0_0_60px_rgba(251,146,60,0.15)]">
+                        <i className="ri-book-2-fill text-5xl text-orange-400" />
+                    </div>
+
+                    <h1 className="text-4xl font-black text-white mb-3"
+                        style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}>
+                        Comics & Manhwa
+                    </h1>
+                    <p className="text-gray-400 text-base leading-relaxed mb-3">
+                        {isLoggedIn
+                            ? 'Comics & Manhwa es una función exclusiva de Nova+. Activa tu plan para acceder a miles de títulos.'
+                            : 'Inicia sesión y activa Nova+ para acceder a miles de mangas, manhwas y cómics.'}
+                    </p>
+
+                    {/* Plan badge - Nova+ only */}
+                    <div className="flex items-center justify-center gap-3 mb-8">
+                        <span className="flex items-center gap-1.5 px-4 py-2 rounded-full
+                                         bg-cyan-500/15 border border-cyan-400/30
+                                         text-cyan-300 text-sm font-bold">
+                            <i className="ri-vip-crown-fill" /> Exclusivo Nova+
+                        </span>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                        <button
+                            onClick={() => navigate('/plans')}
+                            className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl
+                                       bg-gradient-to-r from-orange-500 to-pink-500
+                                       text-white font-black text-base
+                                       hover:brightness-110 transition-all
+                                       shadow-[0_8px_32px_rgba(251,146,60,0.35)]">
+                            <i className="ri-vip-crown-fill" />
+                            Ver planes
+                        </button>
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="px-6 py-4 rounded-xl bg-white/6 border border-white/10
+                                       text-white font-semibold hover:bg-white/10 transition-colors">
+                            Volver
+                        </button>
+                    </div>
+                </div>
+            </motion.div>
+        </main>
+    );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function Comics() {
+    const { user, loading: authLoading } = useAuth();
+    const { canAccessComics } = usePlan();
+
     const [sections,    setSections]    = useState<Section[]>([]);
     const [featured,    setFeatured]    = useState<MangaItem | null>(null);
     const [loading,     setLoading]     = useState(true);
@@ -371,6 +446,11 @@ export default function Comics() {
         window.addEventListener('keydown', handleKey);
         return () => window.removeEventListener('keydown', handleKey);
     }, [handleKey]);
+
+    // Auth / plan gate
+    if (!authLoading && (!user || !canAccessComics)) {
+        return <ComicsGate isLoggedIn={!!user} />;
+    }
 
     return (
         <main className="min-h-screen bg-[#030305] text-white overflow-x-hidden">
