@@ -34,6 +34,7 @@ const Terms = lazy(() => import('./pages/Terms'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const Novedades = lazy(() => import('./pages/Novedades'));
+const Comics = lazy(() => import('./pages/Comics'));
 
 // Loading Fallback
 const PageLoader = () => (
@@ -127,6 +128,7 @@ function App() {
                                     <Route path="/plans" element={<Plans />} />
                                     <Route path="/search" element={<Search />} />
                                     <Route path="/novedades" element={<Novedades />} />
+                                    <Route path="/comics" element={<Comics />} />
                                     <Route path="/watch/:type/:id" element={<MovieWatch />} />
                                     <Route path="/watch/:episodeId" element={<Watch />} />
                                     <Route path="/login" element={<Login />} />
