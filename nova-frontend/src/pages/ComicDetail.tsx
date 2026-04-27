@@ -76,7 +76,10 @@ async function fetchPages(chapterId: string): Promise<string[]> {
         const res = await fetch(`${MD}/at-home/server/${chapterId}`);
         if (!res.ok) return [];
         const { chapter, baseUrl } = await res.json();
-        return (chapter.data || []).map((f: string) => `${baseUrl}/data/${chapter.hash}/${f}`);
+        return (chapter.data || []).map((f: string) => {
+            const raw = `${baseUrl}/data/${chapter.hash}/${f}`;
+            return `${MANGA_API}/api/proxy-image?url=${encodeURIComponent(raw)}&hd=`;
+        });
     } catch {
         return [];
     }
