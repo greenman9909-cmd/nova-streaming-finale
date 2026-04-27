@@ -35,6 +35,7 @@ const Privacy = lazy(() => import('./pages/Privacy'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const Novedades = lazy(() => import('./pages/Novedades'));
 const Comics = lazy(() => import('./pages/Comics'));
+const ComicDetail = lazy(() => import('./pages/ComicDetail'));
 const About = lazy(() => import('./pages/About'));
 
 // Loading Fallback
@@ -146,6 +147,7 @@ function App() {
                                     <Route path="/search" element={<Search />} />
                                     <Route path="/novedades" element={<Novedades />} />
                                     <Route path="/comics" element={<Comics />} />
+                                    <Route path="/comics/:id" element={<ComicDetail />} />
                                     <Route path="/watch/:type/:id" element={<WatchAuthGuard><MovieWatch /></WatchAuthGuard>} />
                                     <Route path="/watch/:episodeId" element={<WatchAuthGuard><Watch /></WatchAuthGuard>} />
                                     <Route path="/login" element={<Login />} />

@@ -99,11 +99,10 @@ interface Section extends SectionDef { items: MangaItem[]; }
 
 // ── Card ──────────────────────────────────────────────────────────────────────
 function MangaCard({ item, index }: { item: MangaItem; index: number }) {
+    const navigate = useNavigate();
     return (
-        <motion.a
-            href={`https://mangadex.org/title/${item.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
+        <motion.div
+            onClick={() => navigate(`/comics/${item.id}`)}
             className="flex-shrink-0 w-[148px] sm:w-[162px] group cursor-pointer block"
             style={{ scrollSnapAlign: 'start' }}
             initial={{ opacity: 0, y: 16 }}
@@ -149,7 +148,7 @@ function MangaCard({ item, index }: { item: MangaItem; index: number }) {
                                     bg-gradient-to-r from-orange-500 to-pink-500
                                     justify-center text-white text-xs font-black tracking-wide shadow-lg">
                         <i className="ri-book-open-fill text-sm" />
-                        Leer en MangaDex
+                        Leer ahora
                     </div>
                 </div>
 
@@ -177,7 +176,7 @@ function MangaCard({ item, index }: { item: MangaItem; index: number }) {
                 {item.year && item.isKorean && <span className="text-gray-700">·</span>}
                 {item.isKorean && <span className="text-blue-400/80">Manhwa</span>}
             </p>
-        </motion.a>
+        </motion.div>
     );
 }
 
@@ -572,8 +571,7 @@ export default function Comics() {
 
                                 {/* CTAs */}
                                 <div className="flex items-center gap-3">
-                                    <a href={`https://mangadex.org/title/${featured.id}`}
-                                        target="_blank" rel="noopener noreferrer"
+                                    <button onClick={() => navigate(`/comics/${featured.id}`)}
                                         className="flex items-center gap-2.5 px-7 py-3.5 rounded-xl
                                                    bg-gradient-to-r from-orange-500 to-pink-500
                                                    text-white font-black text-sm
@@ -582,7 +580,7 @@ export default function Comics() {
                                                    hover:scale-[1.03] active:scale-95 transition-all duration-200">
                                         <i className="ri-book-open-fill text-base" />
                                         Leer ahora
-                                    </a>
+                                    </button>
                                     <button onClick={() => setSearchOpen(true)}
                                         className="flex items-center gap-2 px-5 py-3.5 rounded-xl
                                                    bg-white/8 hover:bg-white/14 border border-white/12
