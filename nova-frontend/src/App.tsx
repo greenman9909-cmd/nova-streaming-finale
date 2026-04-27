@@ -35,6 +35,7 @@ const Privacy = lazy(() => import('./pages/Privacy'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const Novedades = lazy(() => import('./pages/Novedades'));
 const Comics = lazy(() => import('./pages/Comics'));
+const About = lazy(() => import('./pages/About'));
 
 // Loading Fallback
 const PageLoader = () => (
@@ -156,6 +157,7 @@ function App() {
                                     <Route path="/history" element={<HistoryPage />} />
                                     <Route path="/mylist" element={<MyList />} />
                                     <Route path="/profiles" element={<Profiles />} />
+                                    <Route path="/about" element={<About />} />
                                     <Route path="*" element={<NotFound />} />
                                 </Routes>
                             </Suspense>

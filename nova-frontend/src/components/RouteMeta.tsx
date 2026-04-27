@@ -8,22 +8,24 @@ type MetaDefinition = {
 };
 
 const defaultMeta = {
-    title: 'NOVA | Peliculas, Series, Anime y Deportes',
-    description: 'NOVA - Streaming de peliculas, series, anime y deportes en vivo.'
+    title: 'Nova Streaming | Películas, Series, Anime y Deportes en Vivo',
+    description: 'Nova Streaming — la mejor plataforma de streaming en español. Mira películas, series, anime, deportes en vivo y Comics & Manhwa.',
 };
 
 const routeMeta: MetaDefinition[] = [
-    { prefix: '/anime/watch', title: 'NOVA | Ver Anime', description: 'Mira episodios de anime con reproductor optimizado.' },
-    { prefix: '/anime', title: 'NOVA | Anime', description: 'Descubre y reproduce anime en NOVA.' },
-    { prefix: '/peliculas', title: 'NOVA | Peliculas', description: 'Catalogo de peliculas con estrenos y tendencias.' },
-    { prefix: '/series', title: 'NOVA | Series', description: 'Series destacadas, populares y top rating en NOVA.' },
-    { prefix: '/deportes', title: 'NOVA | Deportes en Vivo', description: 'Partidos y eventos deportivos en vivo.' },
-    { prefix: '/plans', title: 'NOVA | Planes', description: 'Compara planes y elige la mejor suscripcion NOVA.' },
-    { prefix: '/search', title: 'NOVA | Buscar', description: 'Busca peliculas, series y anime rapidamente.' },
-    { prefix: '/login', title: 'NOVA | Iniciar Sesion', description: 'Accede a tu cuenta NOVA.' },
-    { prefix: '/signup', title: 'NOVA | Crear Cuenta', description: 'Registrate en NOVA y comienza a ver contenido.' },
-    { prefix: '/privacy', title: 'NOVA | Politica de Privacidad', description: 'Consulta como NOVA protege tu informacion.' },
-    { prefix: '/terms', title: 'NOVA | Terminos de Servicio', description: 'Revisa los terminos de uso de NOVA.' }
+    { prefix: '/anime/watch', title: 'Nova Streaming | Ver Anime Online', description: 'Mira episodios de anime en Full HD con reproductor optimizado en Nova Streaming.' },
+    { prefix: '/anime', title: 'Nova Streaming | Anime Online', description: 'Catálogo completo de anime en Nova Streaming. Sub y doblado en español.' },
+    { prefix: '/peliculas', title: 'Nova Streaming | Películas Online', description: 'Mira películas en HD. Estrenos, clásicos y tendencias en Nova Streaming.' },
+    { prefix: '/series', title: 'Nova Streaming | Series Online', description: 'Las mejores series en streaming. Populares, trending y top rating en Nova.' },
+    { prefix: '/deportes', title: 'Nova Streaming | Deportes en Vivo', description: 'Streaming de deportes en vivo. Fútbol, baloncesto y más en Nova Streaming.' },
+    { prefix: '/comics', title: 'Nova Streaming | Comics & Manhwa', description: 'Miles de mangas, manhwas y cómics exclusivos en Nova+. Solo en Nova Streaming.' },
+    { prefix: '/plans', title: 'Nova Streaming | Planes y Precios', description: 'Compara los planes de Nova Streaming: Free, Standard y Nova+. Empieza gratis.' },
+    { prefix: '/search', title: 'Nova Streaming | Buscar Contenido', description: 'Busca películas, series, anime y más en Nova Streaming.' },
+    { prefix: '/login', title: 'Nova Streaming | Iniciar Sesión', description: 'Accede a tu cuenta de Nova Streaming.' },
+    { prefix: '/signup', title: 'Nova Streaming | Crear Cuenta Gratis', description: 'Regístrate gratis en Nova Streaming y empieza a ver contenido hoy.' },
+    { prefix: '/about', title: 'Nova Streaming | Sobre Nosotros', description: 'Conoce al equipo detrás de Nova Streaming: Adam, Owais y Jampier.' },
+    { prefix: '/privacy', title: 'Nova Streaming | Política de Privacidad', description: 'Consulta cómo Nova Streaming protege tu información.' },
+    { prefix: '/terms', title: 'Nova Streaming | Términos de Servicio', description: 'Revisa los términos de uso de Nova Streaming.' },
 ];
 
 function setMetaTag(attr: 'name' | 'property', key: string, content: string) {
@@ -57,11 +59,17 @@ export default function RouteMeta() {
         document.title = meta.title;
         document.documentElement.lang = 'es';
         setMetaTag('name', 'description', meta.description);
+        setMetaTag('name', 'keywords', 'nova streaming, nova stream, streaming anime, peliculas online, series streaming, deportes en vivo');
+        setMetaTag('property', 'og:site_name', 'Nova Streaming');
+        setMetaTag('property', 'og:type', 'website');
         setMetaTag('property', 'og:title', meta.title);
         setMetaTag('property', 'og:description', meta.description);
+        setMetaTag('property', 'og:url', canonicalUrl);
+        setMetaTag('property', 'og:image', `${window.location.origin}/og-image.png`);
+        setMetaTag('name', 'twitter:card', 'summary_large_image');
         setMetaTag('name', 'twitter:title', meta.title);
         setMetaTag('name', 'twitter:description', meta.description);
-        setMetaTag('property', 'og:url', canonicalUrl);
+        setMetaTag('name', 'twitter:image', `${window.location.origin}/og-image.png`);
         setCanonical(canonicalUrl);
     }, [location.pathname, location.search]);
 

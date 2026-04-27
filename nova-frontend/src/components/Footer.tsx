@@ -35,6 +35,7 @@ export default function Footer() {
                     </div>
 
                     <div className="flex items-center gap-4 text-gray-500 text-sm">
+                        <Link to="/about" className="hover:text-white transition-colors">Nosotros</Link>
                         <Link to="/privacy" className="hover:text-white transition-colors">Privacidad</Link>
                         <Link to="/terms" className="hover:text-white transition-colors">Terminos</Link>
                         <a href="mailto:support@nova.com" className="hover:text-white transition-colors">{t('footer.support')}</a>
