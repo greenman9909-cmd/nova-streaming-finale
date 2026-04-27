@@ -82,6 +82,30 @@ export default function Plans() {
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
     const [toast, setToast] = useState<{ type: 'success' | 'error' | 'info'; msg: string } | null>(null);
     const [dealLoading, setDealLoading] = useState(false);
+    const [recovering, setRecovering] = useState(false);
+
+    const handleRecover = async () => {
+        if (!user) return;
+        setRecovering(true);
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/stripe/recover-session`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user.id, userEmail: user.email }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                await refreshSubscription();
+                setToast({ type: 'success', msg: '¡Suscripción recuperada! Nova+ activado.' });
+            } else {
+                setToast({ type: 'error', msg: data.error || 'No se encontró ningún pago completado.' });
+            }
+        } catch {
+            setToast({ type: 'error', msg: 'Error de conexión al recuperar.' });
+        } finally {
+            setRecovering(false);
+        }
+    };
 
     // Handle success/cancel redirects from Stripe
     useEffect(() => {
@@ -90,19 +114,31 @@ export default function Plans() {
         const isSuccess = searchParams.get('success') === 'true';
 
         if ((isDeal || isSuccess) && sessionId) {
-            // Synchronously write subscription from Stripe session, then refresh context
-            fetch(`${import.meta.env.VITE_API_URL || ""}/api/stripe/verify-session?session_id=${sessionId}`)
-                .then(() => refreshSubscription())
-                .then(() => {
-                    setToast({
-                        type: 'success',
-                        msg: isDeal
-                            ? '¡Deal activado! 7 días de Nova+ por €1. ¡Disfrútalo!'
-                            : '¡Suscripción activada! Disfruta de Nova+',
-                    });
-                })
-                .catch(() => refreshSubscription());
             window.history.replaceState({}, '', '/plans');
+            fetch(`${import.meta.env.VITE_API_URL || ''}/api/stripe/verify-session?session_id=${sessionId}`)
+                .then(async (res) => {
+                    const json = await res.json().catch(() => ({}));
+                    if (!res.ok) {
+                        console.error('verify-session failed:', json);
+                        setToast({ type: 'error', msg: `Error al activar: ${json.error || res.status}` });
+                    }
+                    // Always refresh — DB might have been written by webhook already
+                    await refreshSubscription();
+                    if (res.ok) {
+                        setToast({
+                            type: 'success',
+                            msg: isDeal
+                                ? '¡Deal activado! 7 días de Nova+ por €1. ¡Disfrútalo!'
+                                : '¡Suscripción activada! Disfruta de Nova+',
+                        });
+                    }
+                })
+                .catch(async (err) => {
+                    console.error('verify-session network error:', err);
+                    // Webhook may have already written it — try refreshing anyway
+                    await refreshSubscription();
+                    setToast({ type: 'info', msg: 'Verificando tu suscripción... si no aparece en 1 minuto, recarga la página.' });
+                });
         } else if (searchParams.get('canceled') === 'true') {
             setToast({ type: 'info', msg: 'Pago cancelado. Puedes intentarlo de nuevo cuando quieras.' });
             window.history.replaceState({}, '', '/plans');
@@ -226,6 +262,25 @@ export default function Plans() {
                     </button>
                 </div>
             </div>
+
+            {/* Recovery banner — shown if logged in but no active plan */}
+            {user && !isPremium && (
+                <div className="page-gutter max-w-4xl mx-auto mb-6">
+                    <div className="flex items-center justify-between gap-4 px-5 py-3.5 rounded-xl bg-amber-900/20 border border-amber-500/20 text-sm">
+                        <span className="text-amber-200/70 text-xs">
+                            <i className="ri-error-warning-line mr-1.5 text-amber-400" />
+                            ¿Ya pagaste pero tu plan no se activó?
+                        </span>
+                        <button
+                            onClick={handleRecover}
+                            disabled={recovering}
+                            className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-bold hover:bg-amber-500/30 transition-colors disabled:opacity-50"
+                        >
+                            {recovering ? <><svg className="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg> Buscando...</> : <><i className="ri-refresh-line" /> Recuperar acceso</>}
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Current subscription banner */}
             {isPremium && subscription && (

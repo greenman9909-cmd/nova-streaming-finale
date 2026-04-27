@@ -44,6 +44,7 @@ stripeRouter.post('/deal-checkout', async (c) => {
       payment_method_types: ['card'],
       line_items: [{ price: DEAL_PRICE_ID, quantity: 1 }],
       mode: 'payment',
+      customer_creation: 'always',
       success_url: `${origin}/plans?deal=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url:  `${origin}/plans?canceled=true`,
       customer_email: userEmail || undefined,
@@ -69,6 +70,43 @@ const getPaymentIntent = (invoice: any): string | null => {
   return typeof pi === 'string' ? pi : pi.id;
 };
 
+const upsertSubscription = async (data: {
+  user_id: string;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string;
+  plan_id: string;
+  status: string;
+  current_period_end: string;
+}) => {
+  const { data: existing, error: selectError } = await supabase
+    .from('subscriptions')
+    .select('id')
+    .eq('user_id', data.user_id)
+    .limit(1)
+    .maybeSingle();
+
+  if (selectError) console.error('upsertSubscription select error:', selectError);
+
+  if (existing) {
+    const { error } = await supabase
+      .from('subscriptions')
+      .update({
+        stripe_customer_id: data.stripe_customer_id,
+        stripe_subscription_id: data.stripe_subscription_id,
+        plan_id: data.plan_id,
+        status: data.status,
+        current_period_end: data.current_period_end,
+      })
+      .eq('user_id', data.user_id);
+    if (error) console.error('upsertSubscription update error:', error);
+    return error;
+  } else {
+    const { error } = await supabase.from('subscriptions').insert(data);
+    if (error) console.error('upsertSubscription insert error:', error);
+    return error;
+  }
+};
+
 // Called from frontend after Stripe redirects back — writes subscription synchronously
 stripeRouter.get('/verify-session', async (c) => {
   try {
@@ -81,15 +119,19 @@ stripeRouter.get('/verify-session', async (c) => {
 
     // One-time deal payment
     if (session.mode === 'payment' && session.metadata?.deal === 'true') {
+      if (session.payment_status !== 'paid') {
+        return c.json({ error: 'Payment not completed', payment_status: session.payment_status }, 402);
+      }
       const sevenDays = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-      await supabase.from('subscriptions').upsert({
+      const err = await upsertSubscription({
         user_id: userId,
-        stripe_customer_id: session.customer,
+        stripe_customer_id: session.customer ?? null,
         stripe_subscription_id: `deal_${session.id}`,
         plan_id: 'nova-plus',
         status: 'deal',
         current_period_end: sevenDays,
-      }, { onConflict: 'user_id' });
+      });
+      if (err) return c.json({ error: 'Failed to save subscription', detail: err.message }, 500);
       return c.json({ ok: true, plan: 'nova-plus', status: 'deal' });
     }
 
@@ -97,15 +139,17 @@ stripeRouter.get('/verify-session', async (c) => {
     const subscriptionId = session.subscription;
     if (subscriptionId) {
       const stripeSub = await stripe.subscriptions.retrieve(subscriptionId) as any;
-      await supabase.from('subscriptions').upsert({
+      const planId = stripeSub.metadata?.plan_id || session.metadata?.plan_id || 'standard';
+      const err = await upsertSubscription({
         user_id: userId,
-        stripe_customer_id: session.customer,
+        stripe_customer_id: session.customer ?? null,
         stripe_subscription_id: subscriptionId,
-        plan_id: stripeSub.metadata?.plan_id || 'basic',
+        plan_id: planId,
         status: stripeSub.status,
         current_period_end: getPeriodEnd(stripeSub),
-      }, { onConflict: 'user_id' });
-      return c.json({ ok: true, plan: stripeSub.metadata?.plan_id, status: stripeSub.status });
+      });
+      if (err) return c.json({ error: 'Failed to save subscription', detail: err.message }, 500);
+      return c.json({ ok: true, plan: planId, status: stripeSub.status });
     }
 
     return c.json({ ok: true });
@@ -151,6 +195,48 @@ stripeRouter.post('/create-checkout-session', async (c) => {
 });
 
 // Cancel at period end — user keeps access until then
+// Recovery: look up the most recent completed deal session for a user and re-apply it
+stripeRouter.post('/recover-session', async (c) => {
+  try {
+    const { userId, userEmail } = await c.req.json();
+    if (!userId && !userEmail) return c.json({ error: 'userId or userEmail required' }, 400);
+
+    // Search recent completed payment sessions for this user
+    const sessions = await stripe.checkout.sessions.list({
+      limit: 10,
+      expand: ['data.customer'],
+    }) as any;
+
+    const match = sessions.data.find((s: any) =>
+      (s.client_reference_id === userId || s.metadata?.user_id === userId || s.customer_email === userEmail) &&
+      s.payment_status === 'paid' &&
+      s.metadata?.deal === 'true'
+    );
+
+    if (!match) {
+      return c.json({ error: 'No completed deal session found for this user' }, 404);
+    }
+
+    const uid = match.client_reference_id || match.metadata?.user_id || userId;
+    const sevenDays = new Date(new Date(match.created * 1000).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
+
+    const err = await upsertSubscription({
+      user_id: uid,
+      stripe_customer_id: (typeof match.customer === 'string' ? match.customer : match.customer?.id) ?? null,
+      stripe_subscription_id: `deal_${match.id}`,
+      plan_id: 'nova-plus',
+      status: 'deal',
+      current_period_end: sevenDays,
+    });
+
+    if (err) return c.json({ error: 'DB write failed', detail: err.message }, 500);
+    return c.json({ ok: true, plan: 'nova-plus', status: 'deal', expires: sevenDays });
+  } catch (err: any) {
+    console.error('recover-session error:', err);
+    return c.json({ error: err.message }, 500);
+  }
+});
+
 stripeRouter.post('/cancel-subscription', async (c) => {
   try {
     const { userId } = await c.req.json();
@@ -241,15 +327,16 @@ stripeRouter.post('/webhook', async (c) => {
 
       // One-time deal payment
       if (session.mode === 'payment' && (session.metadata as any)?.deal === 'true') {
+        if ((session as any).payment_status !== 'paid') break;
         const sevenDays = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-        await supabase.from('subscriptions').upsert({
+        await upsertSubscription({
           user_id: userId,
-          stripe_customer_id: session.customer as string,
+          stripe_customer_id: (session.customer as string) ?? null,
           stripe_subscription_id: `deal_${session.id}`,
           plan_id: 'nova-plus',
           status: 'deal',
           current_period_end: sevenDays,
-        }, { onConflict: 'user_id' });
+        });
         break;
       }
 
@@ -257,14 +344,15 @@ stripeRouter.post('/webhook', async (c) => {
       const subscriptionId = session.subscription as string;
       if (!subscriptionId) break;
       const stripeSub = await stripe.subscriptions.retrieve(subscriptionId) as any;
-      await supabase.from('subscriptions').upsert({
+      const planId = stripeSub.metadata?.plan_id || (session.metadata as any)?.plan_id || 'standard';
+      await upsertSubscription({
         user_id: userId,
-        stripe_customer_id: session.customer as string,
+        stripe_customer_id: (session.customer as string) ?? null,
         stripe_subscription_id: subscriptionId,
-        plan_id: stripeSub.metadata?.plan_id || 'basic',
+        plan_id: planId,
         status: stripeSub.status,
-        current_period_end: getPeriodEnd(stripeSub)
-      }, { onConflict: 'user_id' });
+        current_period_end: getPeriodEnd(stripeSub),
+      });
       break;
     }
     case 'customer.subscription.updated': {
