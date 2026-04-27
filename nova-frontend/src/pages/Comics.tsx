@@ -66,7 +66,7 @@ function parseMD(item: Record<string, unknown>): MangaItem | null {
 
 async function mdFetch(query: string, limit = 20): Promise<MangaItem[]> {
     try {
-        const res  = await fetch(`${MD}/manga?${query}&${INCLUDE}&${RATINGS}&limit=${limit}`);
+        const res  = await fetch(`${MD}/manga?${query}&${INCLUDE}&${RATINGS}&limit=${limit}&hasAvailableChapters=true&availableTranslatedLanguage[]=en&availableTranslatedLanguage[]=es`);
         if (!res.ok) return [];
         const json = await res.json();
         return ((json.data || []) as Record<string, unknown>[])
@@ -248,23 +248,16 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
         const t = setTimeout(async () => {
             setLoading(true);
             try {
-                const res  = await fetch(
-                    `${MANGA_API}/api/search?title=${encodeURIComponent(query.trim())}&source=0`
+                const res = await fetch(
+                    `${MD}/manga?title=${encodeURIComponent(query.trim())}&${INCLUDE}&${RATINGS}&limit=20&hasAvailableChapters=true&availableTranslatedLanguage[]=en&availableTranslatedLanguage[]=es&order[relevance]=desc`
                 );
                 const json = await res.json();
-                const list = (json.results || []) as Record<string, unknown>[];
-                setResults(list.map(item => {
-                    const titleRaw = item.title as Record<string, string> | string;
-                    const title    = typeof titleRaw === 'string'
-                        ? titleRaw
-                        : (titleRaw?.en || Object.values(titleRaw || {})[0] || '');
-                    const ca    = (item.cover_art as string) || '';
-                    const cover = ca.startsWith('http') ? ca : ca ? `${MANGA_API}${ca}` : '';
-                    return { id: item.id as string, title, description: '', cover,
-                             status: '', year: null, tags: [], isKorean: false };
-                }).filter(m => m.title));
+                const items = ((json.data || []) as Record<string, unknown>[])
+                    .map(parseMD)
+                    .filter(Boolean) as MangaItem[];
+                setResults(items);
             } catch { setResults([]); }
-            finally   { setLoading(false); }
+            finally { setLoading(false); }
         }, 380);
         return () => clearTimeout(t);
     }, [query]);
@@ -272,7 +265,7 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
     return (
         <AnimatePresence>
             <motion.div
-                className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex flex-col items-center pt-24 px-4"
+                className="fixed inset-0 z-50 bg-black/80 backdrop-blur-2xl flex flex-col items-center pt-20 px-4"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -280,49 +273,59 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
             >
                 <motion.div
                     className="w-full max-w-2xl"
-                    initial={{ y: -20, opacity: 0 }}
-                    animate={{ y: 0,   opacity: 1 }}
-                    transition={{ delay: 0.05, ease: 'easeOut' }}
+                    initial={{ y: -24, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.04, ease: [0.22, 1, 0.36, 1] }}
                 >
                     {/* Input */}
-                    <div className="relative flex items-center mb-5">
-                        <i className="ri-search-line absolute left-4 text-orange-400 text-xl pointer-events-none" />
+                    <div className="relative flex items-center mb-6">
+                        <i className="ri-search-line absolute left-5 text-orange-400 text-xl pointer-events-none" />
                         <input
                             ref={inputRef}
                             value={query}
                             onChange={e => setQuery(e.target.value)}
                             onKeyDown={e => e.key === 'Escape' && onClose()}
-                            placeholder="Buscar manga, manhwa..."
-                            className="w-full pl-12 pr-14 py-4 rounded-2xl
-                                       bg-white/8 border border-orange-500/30 text-white
-                                       placeholder:text-gray-600 text-base
-                                       focus:outline-none focus:border-orange-500/70
-                                       focus:bg-white/10 transition-all"
+                            placeholder="Buscar manga, manhwa, comic..."
+                            className="w-full pl-13 pr-16 py-5 rounded-2xl
+                                       bg-[#111118] border border-white/10 text-white text-base
+                                       placeholder:text-white/20
+                                       focus:outline-none focus:border-orange-500/50
+                                       transition-all shadow-2xl"
                         />
                         <button onClick={onClose}
-                            className="absolute right-3 w-9 h-9 rounded-xl bg-white/8
-                                       flex items-center justify-center text-gray-400
+                            className="absolute right-4 w-8 h-8 rounded-lg bg-white/8
+                                       flex items-center justify-center text-white/40
                                        hover:text-white hover:bg-white/15 transition-colors">
                             <i className="ri-close-line text-lg" />
                         </button>
                     </div>
 
                     {loading && (
-                        <div className="flex justify-center py-10">
-                            <div className="w-7 h-7 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
+                        <div className="flex justify-center py-12">
+                            <div className="w-6 h-6 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
                         </div>
                     )}
 
                     {results.length > 0 && (
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3
-                                        max-h-[58vh] overflow-y-auto scrollbar-hide">
-                            {results.map((item, i) => <MangaCard key={item.id} item={item} index={i} />)}
-                        </div>
+                        <>
+                            <p className="text-white/25 text-xs mb-4 px-1">{results.length} resultados</p>
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3
+                                            max-h-[60vh] overflow-y-auto scrollbar-hide pb-4">
+                                {results.map((item, i) => <MangaCard key={item.id} item={item} index={i} />)}
+                            </div>
+                        </>
                     )}
 
                     {!loading && query.length >= 2 && results.length === 0 && (
-                        <p className="text-center text-gray-600 mt-12 text-sm">
-                            No se encontraron resultados para "{query}"
+                        <div className="text-center py-16">
+                            <i className="ri-search-line text-4xl text-white/10 block mb-3" />
+                            <p className="text-white/30 text-sm">Sin resultados para "{query}"</p>
+                        </div>
+                    )}
+
+                    {!query && (
+                        <p className="text-center text-white/15 text-sm pt-8">
+                            Escribe para buscar entre miles de títulos
                         </p>
                     )}
                 </motion.div>
