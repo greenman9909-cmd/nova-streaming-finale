@@ -1,203 +1,145 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import NovaLogo from '../components/NovaLogo';
 
-const CREATORS = [
-    {
-        name: 'Adam',
-        role: 'Co-Founder · Product',
-        avatar: 'AD',
-        gradient: 'from-yellow-400 to-amber-500',
-        shadow: 'shadow-[0_0_40px_rgba(251,191,36,0.18)]',
-    },
-    {
-        name: 'Owais',
-        role: 'Co-Founder · Engineering',
-        avatar: 'OW',
-        gradient: 'from-violet-500 to-indigo-600',
-        shadow: 'shadow-[0_0_40px_rgba(139,92,246,0.22)]',
-    },
-    {
-        name: 'Jampier',
-        role: 'Co-Founder · Design',
-        avatar: 'JA',
-        gradient: 'from-orange-400 to-rose-500',
-        shadow: 'shadow-[0_0_40px_rgba(251,146,60,0.18)]',
-    },
-];
-
-const PILLARS = [
-    { icon: 'ri-movie-2-line',   label: 'Películas & Series' },
-    { icon: 'ri-sword-line',      label: 'Anime' },
-    { icon: 'ri-football-line',   label: 'Deportes en Vivo' },
-    { icon: 'ri-book-2-fill',     label: 'Comics & Manhwa' },
-];
+const fade = (delay = 0) => ({
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true },
+    transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] },
+});
 
 export default function About() {
     return (
-        <main className="min-h-screen bg-[#07070f] text-white overflow-x-hidden">
+        <main className="min-h-screen bg-[#050508] text-white">
 
-            {/* ambient */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden -z-0">
-                <div className="absolute -top-[10%] left-[15%] w-[55%] h-[45%] bg-violet-700/7 blur-[200px] rounded-full" />
-                <div className="absolute top-[55%] right-[-8%] w-[38%] h-[38%] bg-cyan-600/5 blur-[160px] rounded-full" />
-            </div>
-
-            {/* ── Hero ── */}
-            <section className="relative pt-36 pb-24 px-6 text-center">
-                <motion.div
-                    initial={{ opacity: 0, y: 36 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-                    className="max-w-2xl mx-auto"
+            {/* ── HERO ── */}
+            <section className="px-6 md:px-16 pt-40 pb-28 max-w-6xl mx-auto">
+                <motion.p
+                    {...fade(0)}
+                    className="text-xs tracking-[0.25em] text-white/30 uppercase mb-8 font-medium"
                 >
-                    <NovaLogo className="w-16 h-16 mx-auto mb-8 opacity-90" />
+                    Nova Streaming · 2026
+                </motion.p>
 
-                    <h1 className="text-5xl md:text-[4.5rem] font-black leading-none tracking-tight mb-5"
-                        style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}>
-                        Sobre{' '}
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-cyan-300 to-violet-400">
-                            Nova Streaming
-                        </span>
-                    </h1>
+                <motion.h1
+                    {...fade(0.05)}
+                    className="text-[clamp(3rem,10vw,8rem)] font-black leading-[0.92] tracking-tight mb-10"
+                    style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
+                >
+                    Hecho para los que{' '}
+                    <br />
+                    <span className="text-white/20">no se conforman</span>
+                </motion.h1>
 
-                    <p className="text-[1.05rem] text-gray-400 leading-relaxed mb-10 max-w-xl mx-auto">
-                        Una plataforma construida por tres personas que querían ver
-                        anime, películas, deportes y manhwa — todo en un solo lugar,
-                        sin complicaciones.
+                <motion.p {...fade(0.1)} className="text-white/50 text-lg max-w-lg leading-relaxed">
+                    Nova nació de una idea simple: mereces una plataforma que tenga
+                    todo — anime, películas, series, deportes en vivo y manhwa —
+                    sin tener que buscar en diez sitios diferentes.
+                </motion.p>
+            </section>
+
+            {/* ── DIVIDER ── */}
+            <div className="h-px bg-white/6 mx-6 md:mx-16" />
+
+            {/* ── CONTENT GRID ── */}
+            <section className="px-6 md:px-16 py-24 max-w-6xl mx-auto grid md:grid-cols-2 gap-20 items-start">
+                <motion.div {...fade(0)}>
+                    <p className="text-xs tracking-[0.2em] text-white/25 uppercase mb-6">Lo que construimos</p>
+                    <ul className="space-y-5">
+                        {[
+                            ['Anime', 'Sub y doblado. Sin restricciones.'],
+                            ['Películas & Series', 'Lo que está en tendencia, cuando quieras.'],
+                            ['Deportes en Vivo', 'Fútbol, baloncesto y más — en tiempo real.'],
+                            ['Comics & Manhwa', 'Exclusivo Nova+. Miles de títulos coreanos y más.'],
+                        ].map(([title, desc]) => (
+                            <li key={title} className="flex gap-5 items-start group">
+                                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-white/20
+                                                 group-hover:bg-violet-400 transition-colors duration-300 shrink-0" />
+                                <div>
+                                    <p className="font-bold text-white text-base">{title}</p>
+                                    <p className="text-white/40 text-sm mt-0.5">{desc}</p>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </motion.div>
+
+                <motion.div {...fade(0.08)} className="space-y-6 text-white/45 text-base leading-relaxed">
+                    <p>
+                        No somos una empresa. Somos tres personas que querían algo mejor
+                        y decidieron construirlo.
                     </p>
-
-                    <div className="flex flex-wrap justify-center gap-3">
-                        <Link to="/"
-                            className="px-7 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-600
-                                       text-white font-bold text-sm hover:brightness-110 transition-all
-                                       shadow-[0_6px_28px_rgba(139,92,246,0.32)]">
-                            Explorar Nova
-                        </Link>
-                        <Link to="/plans"
-                            className="px-7 py-3 rounded-xl border border-white/10 bg-white/5
-                                       text-white font-semibold text-sm hover:bg-white/9 transition-colors">
-                            Ver planes
-                        </Link>
-                    </div>
+                    <p>
+                        Cada detalle de Nova — desde la velocidad de carga hasta el diseño
+                        de cada pantalla — está pensado para que la experiencia se sienta
+                        fluida, moderna y sin fricción.
+                    </p>
+                    <p>
+                        Empezamos pequeños. Seguimos creciendo. Y no vamos a parar.
+                    </p>
                 </motion.div>
             </section>
 
-            {/* ── What's Nova ── */}
-            <section className="py-14 px-6">
-                <div className="max-w-4xl mx-auto">
-                    <motion.div
-                        initial={{ opacity: 0, y: 24 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.55 }}
-                        className="rounded-3xl border border-white/8 bg-white/[0.035] p-10 md:p-14"
-                    >
-                        <span className="text-[11px] font-bold tracking-[0.18em] text-violet-400 uppercase mb-5 block">
-                            ¿Qué es Nova?
-                        </span>
-                        <p className="text-white/80 text-lg md:text-xl leading-relaxed">
-                            Nova Streaming es una plataforma de entretenimiento que reúne
-                            el contenido que más te importa. Sin complicaciones, sin barreras.
-                            Anime, películas, series, deportes en vivo y Comics & Manhwa —
-                            accesible desde cualquier lugar.
-                        </p>
+            {/* ── DIVIDER ── */}
+            <div className="h-px bg-white/6 mx-6 md:mx-16" />
 
-                        <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
-                            {PILLARS.map((p, i) => (
-                                <motion.div
-                                    key={p.label}
-                                    initial={{ opacity: 0, y: 16 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.4, delay: i * 0.07 }}
-                                    className="flex flex-col items-center gap-2.5 p-5 rounded-2xl
-                                               bg-white/4 border border-white/6
-                                               hover:border-violet-500/25 hover:bg-white/7 transition-all duration-250"
-                                >
-                                    <i className={`${p.icon} text-2xl text-violet-400`} />
-                                    <span className="text-xs font-semibold text-gray-300 text-center leading-snug">{p.label}</span>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </motion.div>
-                </div>
-            </section>
+            {/* ── TEAM ── */}
+            <section className="px-6 md:px-16 py-24 max-w-6xl mx-auto">
+                <motion.p {...fade(0)} className="text-xs tracking-[0.2em] text-white/25 uppercase mb-16">
+                    El equipo
+                </motion.p>
 
-            {/* ── Team ── */}
-            <section className="py-20 px-6">
-                <div className="max-w-4xl mx-auto">
-
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                        className="text-center mb-16"
-                    >
-                        <span className="text-[11px] font-bold tracking-[0.18em] text-cyan-400 uppercase mb-4 block">
-                            El equipo
-                        </span>
-                        <h2 className="text-3xl md:text-5xl font-black">
-                            Tres personas. Una visión.
-                        </h2>
-                    </motion.div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {CREATORS.map((c, i) => (
-                            <motion.div
-                                key={c.name}
-                                initial={{ opacity: 0, y: 32 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                                className="group relative rounded-3xl border border-white/8 bg-white/[0.03]
-                                           p-8 text-center overflow-hidden
-                                           hover:border-white/14 hover:bg-white/[0.05]
-                                           transition-all duration-350"
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/6 border border-white/6 rounded-2xl overflow-hidden">
+                    {[
+                        { name: 'Adam',    role: 'Product',     initials: 'AD', color: '#f59e0b' },
+                        { name: 'Owais',   role: 'Engineering', initials: 'OW', color: '#8b5cf6' },
+                        { name: 'Jampier', role: 'Design',      initials: 'JA', color: '#f97316' },
+                    ].map((p, i) => (
+                        <motion.div
+                            key={p.name}
+                            {...fade(i * 0.1)}
+                            className="bg-[#050508] p-10 hover:bg-white/[0.025] transition-colors duration-300 group"
+                        >
+                            <div
+                                className="w-12 h-12 rounded-xl flex items-center justify-center
+                                           text-sm font-black text-black mb-8
+                                           group-hover:scale-105 transition-transform duration-300"
+                                style={{ backgroundColor: p.color }}
                             >
-                                {/* subtle top glow on hover */}
-                                <div className={`absolute -top-12 left-1/2 -translate-x-1/2 w-40 h-40
-                                                 bg-gradient-to-br ${c.gradient} opacity-0
-                                                 group-hover:opacity-[0.12] blur-3xl
-                                                 transition-opacity duration-500 pointer-events-none`} />
-
-                                <div className={`w-20 h-20 mx-auto mb-5 rounded-2xl
-                                                 bg-gradient-to-br ${c.gradient}
-                                                 flex items-center justify-center
-                                                 text-2xl font-black text-black/80
-                                                 ${c.shadow}
-                                                 group-hover:scale-105 transition-transform duration-300`}>
-                                    {c.avatar}
-                                </div>
-
-                                <h3 className="text-xl font-black text-white mb-1">{c.name}</h3>
-                                <p className="text-xs font-semibold text-white/40 tracking-wide">{c.role}</p>
-                            </motion.div>
-                        ))}
-                    </div>
+                                {p.initials}
+                            </div>
+                            <p className="text-2xl font-black text-white mb-1">{p.name}</p>
+                            <p className="text-xs text-white/30 tracking-widest uppercase font-medium">{p.role}</p>
+                        </motion.div>
+                    ))}
                 </div>
             </section>
 
-            {/* ── CTA ── */}
-            <section className="py-20 px-6">
-                <motion.div
-                    initial={{ opacity: 0, y: 28 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="max-w-xl mx-auto text-center"
-                >
-                    <h2 className="text-3xl md:text-4xl font-black mb-4">Únete a Nova</h2>
-                    <p className="text-gray-500 mb-8">Empieza gratis. Sin tarjeta. Sin compromisos.</p>
+            {/* ── DIVIDER ── */}
+            <div className="h-px bg-white/6 mx-6 md:mx-16" />
+
+            {/* ── BOTTOM CTA ── */}
+            <section className="px-6 md:px-16 py-24 max-w-6xl mx-auto flex flex-col md:flex-row
+                                 items-start md:items-center justify-between gap-8">
+                <motion.div {...fade(0)}>
+                    <p className="text-3xl md:text-4xl font-black leading-tight">
+                        Empieza gratis.
+                        <br />
+                        <span className="text-white/30">Sin tarjeta. Sin trampa.</span>
+                    </p>
+                </motion.div>
+
+                <motion.div {...fade(0.08)} className="flex gap-3 shrink-0">
                     <Link to="/signup"
-                        className="inline-flex items-center gap-2 px-9 py-3.5 rounded-xl
-                                   bg-gradient-to-r from-violet-600 to-cyan-500
-                                   text-white font-bold
-                                   hover:brightness-110 transition-all
-                                   shadow-[0_10px_40px_rgba(139,92,246,0.35)]">
-                        <i className="ri-user-add-line" />
-                        Crear cuenta gratis
+                        className="px-7 py-3.5 rounded-xl bg-white text-black font-bold text-sm
+                                   hover:bg-white/90 transition-colors">
+                        Crear cuenta
+                    </Link>
+                    <Link to="/plans"
+                        className="px-7 py-3.5 rounded-xl border border-white/12 text-white/70
+                                   font-semibold text-sm hover:text-white hover:border-white/25
+                                   transition-all">
+                        Ver planes
                     </Link>
                 </motion.div>
             </section>
