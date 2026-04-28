@@ -14,9 +14,7 @@ const supabase = createClient(
 );
 
 const PRICE_MAP: Record<string, { monthly: string; yearly: string }> = {
-  'basic':     { monthly: 'price_1TNcRgBC4EINc08b7NtN3x7Y', yearly: 'price_1TNcRfBC4EINc08bDPMdt58j' },
-  'standard':  { monthly: 'price_1TNcRgBC4EINc08b591s1rUp', yearly: 'price_1TNcRfBC4EINc08bFx6MCndg' },
-  'nova-plus': { monthly: 'price_1TNcRkBC4EINc08bimXV7d5N', yearly: 'price_1TNcRjBC4EINc08bNYG5rd4q' },
+  'nova-plus': { monthly: 'price_1TRFTxAxU1OE9jbwi9Nyo5u1', yearly: 'price_1TRFTxAxU1OE9jbwi9Nyo5u1' },
 };
 
 const DEAL_PRICE_ID = 'price_1TNchPBC4EINc08b3JVCueS7'; // €1 one-time — 7 days Nova+

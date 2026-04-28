@@ -5,54 +5,12 @@ import { usePlan } from '../hooks/usePlan';
 
 const PLANS = [
     {
-        id: 'free',
-        name: 'Free',
-        badge: null,
-        monthly: 0,
-        yearly: 0,
-        yearlySavings: 0,
-        color: 'from-gray-500 to-gray-700',
-        accentColor: 'text-gray-300',
-        borderColor: 'border-gray-600/30',
-        glowColor: 'transparent',
-        isFree: true,
-        features: [
-            { icon: 'ri-hd-line',     text: '720p HD' },
-            { icon: 'ri-time-line',   text: '3 horas de visualización al día' },
-            { icon: 'ri-movie-line',  text: 'Series, Anime y Películas' },
-            { icon: 'ri-device-line', text: '1 pantalla' },
-        ],
-        missing: ['Sin límite de tiempo', 'Full HD 1080p', 'Sin anuncios'],
-    },
-    {
-        id: 'standard',
-        name: 'Standard',
-        badge: 'Popular',
-        monthly: 9.99,
-        yearly: 89.99,
-        yearlySavings: 25,
-        isFree: false,
-        color: 'from-violet-600 to-indigo-700',
-        accentColor: 'text-violet-300',
-        borderColor: 'border-violet-500/50',
-        glowColor: 'rgba(139,92,246,0.2)',
-        features: [
-            { icon: 'ri-hd-line',       text: 'Full HD 1080p' },
-            { icon: 'ri-time-line',     text: 'Sin límite de tiempo' },
-            { icon: 'ri-movie-line',    text: 'Series, Anime y Películas' },
-            { icon: 'ri-device-line',   text: '2 pantallas' },
-            { icon: 'ri-download-line', text: '25 descargas/mes' },
-            { icon: 'ri-spam-2-line',   text: 'Sin anuncios' },
-        ],
-        missing: ['Dolby Atmos'],
-    },
-    {
         id: 'nova-plus',
         name: 'NOVA+',
-        badge: 'Best Value',
-        monthly: 14.99,
-        yearly: 134.99,
-        yearlySavings: 25,
+        badge: 'Testing',
+        monthly: 0.01,
+        yearly: 0.01,
+        yearlySavings: 0,
         isFree: false,
         color: 'from-cyan-500 to-blue-600',
         accentColor: 'text-cyan-300',
@@ -77,10 +35,9 @@ export default function Plans() {
     const { tier } = usePlan();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const [interval, setInterval] = useState<'monthly' | 'yearly'>('monthly');
+    const interval = 'monthly' as const;
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
     const [toast, setToast] = useState<{ type: 'success' | 'error' | 'info'; msg: string } | null>(null);
-    const [dealLoading, setDealLoading] = useState(false);
     const [recovering, setRecovering] = useState(false);
 
     const handleRecover = async () => {
@@ -144,27 +101,7 @@ export default function Plans() {
         }
     }, []);
 
-    const handleDealCheckout = async () => {
-        if (!user) { navigate('/login?redirect=/plans'); return; }
-        setDealLoading(true);
-        try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/stripe/deal-checkout`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: user.id, userEmail: user.email }),
-            });
-            const data = await res.json();
-            if (data.url) {
-                window.location.href = data.url;
-            } else {
-                setToast({ type: 'error', msg: data.error || 'Error al iniciar el pago.' });
-            }
-        } catch {
-            setToast({ type: 'error', msg: 'No se pudo conectar con el servidor de pagos.' });
-        } finally {
-            setDealLoading(false);
-        }
-    };
+
 
     useEffect(() => {
         if (toast) {
@@ -208,11 +145,8 @@ export default function Plans() {
     const isCurrentPlan = (planId: string) =>
         isPremium && subscription?.planId === planId;
 
-    const price = (plan: typeof PLANS[0]) =>
-        interval === 'yearly' ? plan.yearly : plan.monthly;
 
-    const perMonth = (plan: typeof PLANS[0]) =>
-        interval === 'yearly' ? (plan.yearly / 12).toFixed(2) : plan.monthly.toFixed(2);
+    const perMonth = (plan: typeof PLANS[0]) => plan.monthly.toFixed(2);
 
     return (
         <main className="min-h-screen bg-[#030305] pb-24">
@@ -236,30 +170,11 @@ export default function Plans() {
                     <i className="ri-vip-crown-fill" /> Nova+
                 </span>
                 <h1 className="text-5xl md:text-7xl font-black text-white leading-none mb-4" style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}>
-                    Elige tu plan
+                    Nova+
                 </h1>
                 <p className="text-white/55 text-base max-w-lg mx-auto leading-relaxed mb-8">
-                    7 días gratis. Sin compromisos. Cancela cuando quieras.
+                    Acceso completo. €0.01/mes — precio de testing.
                 </p>
-
-                {/* Interval toggle */}
-                <div className="inline-flex items-center gap-0 p-1 rounded-xl bg-white/5 border border-white/10">
-                    <button
-                        onClick={() => setInterval('monthly')}
-                        className={`px-5 py-2 rounded-lg text-sm font-bold transition-all ${interval === 'monthly' ? 'bg-white text-black' : 'text-white/50 hover:text-white'}`}
-                    >
-                        Mensual
-                    </button>
-                    <button
-                        onClick={() => setInterval('yearly')}
-                        className={`px-5 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${interval === 'yearly' ? 'bg-white text-black' : 'text-white/50 hover:text-white'}`}
-                    >
-                        Anual
-                        <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${interval === 'yearly' ? 'bg-emerald-500 text-white' : 'bg-emerald-500/20 text-emerald-400'}`}>
-                            −25%
-                        </span>
-                    </button>
-                </div>
             </div>
 
             {/* Recovery banner — shown if logged in but no active plan */}
@@ -298,62 +213,10 @@ export default function Plans() {
                 </div>
             )}
 
-            {/* LIMITED TIME DEAL BANNER */}
-            {!isPremium && (
-                <div className="page-gutter max-w-5xl mx-auto mb-10">
-                    <div className="relative overflow-hidden rounded-2xl border border-amber-400/30 bg-gradient-to-br from-amber-950/60 via-orange-950/50 to-red-950/40 backdrop-blur">
-                        {/* Glow */}
-                        <div className="absolute inset-0 pointer-events-none">
-                            <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-[400px] h-[150px] bg-amber-500/15 blur-[60px] rounded-full" />
-                        </div>
-                        <div className="relative flex flex-col md:flex-row items-center gap-6 px-7 py-6">
-                            {/* Icon + label */}
-                            <div className="flex-shrink-0 flex flex-col items-center gap-2">
-                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                                    <i className="ri-flashlight-fill text-white text-3xl" />
-                                </div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.15em] text-amber-400 bg-amber-400/10 border border-amber-400/25 px-2 py-0.5 rounded-full">
-                                    Oferta limitada
-                                </span>
-                            </div>
-                            {/* Text */}
-                            <div className="flex-1 text-center md:text-left">
-                                <h2 className="text-2xl md:text-3xl font-black text-white leading-tight mb-1">
-                                    7 días de <span className="text-amber-400">NOVA+</span> por solo <span className="text-amber-300">€1</span>
-                                </h2>
-                                <p className="text-white/55 text-sm leading-relaxed">
-                                    Full HD 1080p · Sin anuncios · Dolby Atmos · Acceso completo. Sin compromiso — un único pago de €1.
-                                </p>
-                                <div className="flex flex-wrap items-center gap-3 mt-3 justify-center md:justify-start">
-                                    {['1080p + HDR', 'Sin anuncios', 'Dolby Atmos', '4 pantallas'].map(f => (
-                                        <span key={f} className="flex items-center gap-1 text-[11px] font-semibold text-amber-300/80">
-                                            <i className="ri-check-line text-amber-400" />{f}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                            {/* CTA */}
-                            <div className="flex-shrink-0 flex flex-col items-center gap-2">
-                                <button
-                                    onClick={handleDealCheckout}
-                                    disabled={dealLoading}
-                                    className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-black text-base bg-gradient-to-r from-amber-400 to-orange-500 text-black hover:brightness-110 transition-all shadow-lg shadow-amber-500/30 disabled:opacity-70 disabled:cursor-wait"
-                                >
-                                    {dealLoading ? (
-                                        <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg> Procesando...</>
-                                    ) : (
-                                        <><i className="ri-shopping-cart-2-fill" /> Conseguir por €1</>
-                                    )}
-                                </button>
-                                <span className="text-white/30 text-[10px]">Pago único · Sin renovación</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+
 
             {/* Pricing cards */}
-            <div className="page-gutter max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="page-gutter max-w-md mx-auto">
                 {PLANS.map((plan) => {
                     const current = isCurrentPlan(plan.id);
                     const isNovaPlus = plan.id === 'nova-plus';
@@ -394,11 +257,6 @@ export default function Plans() {
                                         </span>
                                         <span className="text-white/40 text-sm mb-0.5">/mes</span>
                                     </div>
-                                    {interval === 'yearly' && (
-                                        <div className="text-white/40 text-xs mt-1">
-                                            €{price(plan).toFixed(2)} facturado anualmente
-                                        </div>
-                                    )}
                                 </div>
 
                                 {/* CTA button */}

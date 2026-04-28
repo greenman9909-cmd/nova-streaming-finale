@@ -37,7 +37,18 @@
       "Read(//c/Users/owais/Downloads/manga-api/**)",
       "Read(//c/Users/owais/Downloads/manga-api/api/**)",
       "Read(//c/Users/owais/Downloads/nova/ main/nova-frontend/server/**)",
-      "Read(//c/Users/owais/Downloads/nova/ main/nova-frontend/src/context/**)"
+      "Read(//c/Users/owais/Downloads/nova/ main/nova-frontend/src/context/**)",
+      "Bash(findstr :5173)",
+      "Bash(findstr LISTENING)",
+      "Bash(taskkill /PID 27248 /F)",
+      "PowerShell(Stop-Process -Id 27248 -Force)",
+      "PowerShell($port3000 = \\(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue\\).OwningProcess; if \\($port3000\\) { Stop-Process -Id $port3000 -Force; \"Killed PID $port3000\" } else { \"Port 3000 free\" })",
+      "PowerShell($p5173 = \\(Get-NetTCPConnection -LocalPort 5173 -State Listen -ErrorAction SilentlyContinue\\).OwningProcess; if \\($p5173\\) { Stop-Process -Id $p5173 -Force }; $p3000 = \\(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue\\).OwningProcess; if \\($p3000\\) { Stop-Process -Id $p3000 -Force }; \"Ports cleared\")",
+      "Bash(python -m json.tool)",
+      "Bash(curl -s 'https://rrtgfxytykqgxoxohmqh.supabase.co/rest/v1/profiles?select=*&limit=20' -H 'apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydGdmeHl0eWtxZ3hveG9obXFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjY4NzgsImV4cCI6MjA4ODkwMjg3OH0.K_NvgweyTTOE8laxLULjjLu22yuHeHzlI77ko2njRco' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJydGdmeHl0eWtxZ3hveG9obXFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjY4NzgsImV4cCI6MjA4ODkwMjg3OH0.K_NvgweyTTOE8laxLULjjLu22yuHeHzlI77ko2njRco')",
+      "Bash(git add *)",
+      "Bash(git commit -m 'refactor\\(about\\): remove fake stats, cleaner minimal UI *)",
+      "Bash(git commit *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\owais\\Downloads\\manga-api"
