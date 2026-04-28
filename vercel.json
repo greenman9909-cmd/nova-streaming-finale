@@ -1,0 +1,14 @@
+{
+  "buildCommand": "cd nova-frontend && npm run build",
+  "outputDirectory": "nova-frontend/dist",
+  "installCommand": "cd nova-frontend && npm install --legacy-peer-deps",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ],
+  "functions": {
+    "nova-frontend/api/index.mjs": {
+      "maxDuration": 30
+    }
+  }
+}
