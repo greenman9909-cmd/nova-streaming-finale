@@ -1,9 +1,0 @@
-{
-  "buildCommand": "cd nova-frontend && npm run build && mkdir -p api && cp nova-frontend/api/index.mjs api/index.mjs",
-  "outputDirectory": "nova-frontend/dist",
-  "installCommand": "cd nova-frontend && npm install",
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
-  ]
-}
