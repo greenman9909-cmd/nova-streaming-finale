@@ -128,7 +128,6 @@ export default function Navbar() {
         '/history': { glow: 'rgba(251,191,36,0.40)', gradient: 'from-amber-400 to-orange-300', border: 'rgba(251,191,36,0.3)' },
         '/mylist': { glow: 'rgba(236,72,153,0.40)', gradient: 'from-pink-500 to-rose-400', border: 'rgba(236,72,153,0.3)' },
         '/profiles': { glow: 'rgba(45,212,191,0.40)', gradient: 'from-teal-400 to-emerald-300', border: 'rgba(45,212,191,0.3)' },
-        '/comics': { glow: 'rgba(251,146,60,0.40)', gradient: 'from-orange-500 to-amber-400', border: 'rgba(251,146,60,0.3)' },
         '/plans': { glow: 'rgba(0,168,225,0.40)', gradient: 'from-[#00a8e1] to-[#0080b3]', border: 'rgba(0,168,225,0.3)' },
     };
 
@@ -167,13 +166,6 @@ export default function Navbar() {
             activeColor: 'text-green-300',
             iconLine: 'ri-trophy-line',
             iconFill: 'ri-trophy-fill'
-        },
-        {
-            path: '/comics',
-            label: 'Comics',
-            activeColor: 'text-orange-300',
-            iconLine: 'ri-book-2-line',
-            iconFill: 'ri-book-2-fill'
         },
         {
             path: '/history',
@@ -248,9 +240,6 @@ export default function Navbar() {
                                 </Link>
                                 <Link to="/deportes" className={`text-sm font-semibold tracking-wide transition-colors ${isActive('/deportes') ? 'text-green-400 drop-shadow-[0_0_8px_rgba(74,222,128,0.5)]' : 'text-gray-300 hover:text-green-300'}`}>
                                     Deportes
-                                </Link>
-                                <Link to="/comics" className={`text-sm font-semibold tracking-wide transition-colors ${isActive('/comics') ? 'text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.5)]' : 'text-gray-300 hover:text-orange-300'}`}>
-                                    Comics
                                 </Link>
                                 <Link to="/novedades" className={`text-sm font-semibold tracking-wide transition-colors ${isActive('/novedades') ? 'text-fuchsia-400 drop-shadow-[0_0_8px_rgba(217,70,239,0.5)]' : 'text-gray-300 hover:text-fuchsia-300'}`}>
                                     Novedades

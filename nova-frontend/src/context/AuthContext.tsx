@@ -50,7 +50,6 @@ interface AuthContextType {
     isPremium: boolean;
     refreshSubscription: () => Promise<void>;
     planTier: PlanTier;
-    canAccessComics: boolean;
     freeMinutesUsedToday: number;
     freeMinutesRemaining: number;
     recordWatchMinutes: (minutes: number) => void;
@@ -89,7 +88,6 @@ const AuthContext = createContext<AuthContextType>({
     isPremium: false,
     refreshSubscription: async () => { },
     planTier: 'none',
-    canAccessComics: false,
     freeMinutesUsedToday: 0,
     freeMinutesRemaining: FREE_DAILY_LIMIT_MINUTES,
     recordWatchMinutes: () => { },
@@ -508,8 +506,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return 'basic';
     })();
 
-    const canAccessComics = planTier === 'nova-plus';
-
     const freeMinutesUsedToday = planTier === 'free' ? getFreeMinutesUsed() : 0;
     const freeMinutesRemaining = Math.max(0, FREE_DAILY_LIMIT_MINUTES - freeMinutesUsedToday);
 
@@ -525,7 +521,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             addProfile, editProfile, deleteProfile, updateProfile,
             watchlist, watchlistStatus, watchlistError, refreshWatchlist, addToWatchlist, removeFromWatchlist, isInWatchlist,
             subscription, isPremium, refreshSubscription,
-            planTier, canAccessComics, freeMinutesUsedToday, freeMinutesRemaining, recordWatchMinutes,
+            planTier, freeMinutesUsedToday, freeMinutesRemaining, recordWatchMinutes,
         }}>
             {children}
         </AuthContext.Provider>

@@ -22,7 +22,7 @@ const PLANS = [
             { icon: 'ri-movie-line',  text: 'Series, Anime y Películas' },
             { icon: 'ri-device-line', text: '1 pantalla' },
         ],
-        missing: ['Comics & Manhwa', 'Sin límite de tiempo', 'Full HD 1080p', 'Sin anuncios'],
+        missing: ['Sin límite de tiempo', 'Full HD 1080p', 'Sin anuncios'],
     },
     {
         id: 'standard',
@@ -44,7 +44,7 @@ const PLANS = [
             { icon: 'ri-download-line', text: '25 descargas/mes' },
             { icon: 'ri-spam-2-line',   text: 'Sin anuncios' },
         ],
-        missing: ['Comics & Manhwa', 'Dolby Atmos'],
+        missing: ['Dolby Atmos'],
     },
     {
         id: 'nova-plus',
@@ -62,7 +62,6 @@ const PLANS = [
             { icon: 'ri-hd-line',       text: 'Full HD 1080p + HDR' },
             { icon: 'ri-time-line',     text: 'Sin límite de tiempo' },
             { icon: 'ri-movie-line',    text: 'Todo el contenido + exclusivos' },
-            { icon: 'ri-book-2-fill',   text: 'Comics & Manhwa' },
             { icon: 'ri-device-line',   text: '4 pantallas' },
             { icon: 'ri-download-line', text: 'Descargas ilimitadas' },
             { icon: 'ri-spam-2-line',   text: 'Sin anuncios' },

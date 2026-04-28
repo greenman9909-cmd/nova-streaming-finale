@@ -9,7 +9,7 @@ type MetaDefinition = {
 
 const defaultMeta = {
     title: 'Nova Streaming | Películas, Series, Anime y Deportes en Vivo',
-    description: 'Nova Streaming — la mejor plataforma de streaming en español. Mira películas, series, anime, deportes en vivo y Comics & Manhwa.',
+    description: 'Nova Streaming — la mejor plataforma de streaming en español. Mira películas, series, anime y deportes en vivo.',
 };
 
 const routeMeta: MetaDefinition[] = [
@@ -18,7 +18,6 @@ const routeMeta: MetaDefinition[] = [
     { prefix: '/peliculas', title: 'Nova Streaming | Películas Online', description: 'Mira películas en HD. Estrenos, clásicos y tendencias en Nova Streaming.' },
     { prefix: '/series', title: 'Nova Streaming | Series Online', description: 'Las mejores series en streaming. Populares, trending y top rating en Nova.' },
     { prefix: '/deportes', title: 'Nova Streaming | Deportes en Vivo', description: 'Streaming de deportes en vivo. Fútbol, baloncesto y más en Nova Streaming.' },
-    { prefix: '/comics', title: 'Nova Streaming | Comics & Manhwa', description: 'Miles de mangas, manhwas y cómics exclusivos en Nova+. Solo en Nova Streaming.' },
     { prefix: '/plans', title: 'Nova Streaming | Planes y Precios', description: 'Compara los planes de Nova Streaming: Free, Standard y Nova+. Empieza gratis.' },
     { prefix: '/search', title: 'Nova Streaming | Buscar Contenido', description: 'Busca películas, series, anime y más en Nova Streaming.' },
     { prefix: '/login', title: 'Nova Streaming | Iniciar Sesión', description: 'Accede a tu cuenta de Nova Streaming.' },

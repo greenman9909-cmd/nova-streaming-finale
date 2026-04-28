@@ -5,7 +5,7 @@ const fade = (delay = 0) => ({
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true },
-    transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] as any },
 });
 
 export default function About() {
@@ -33,7 +33,7 @@ export default function About() {
 
                 <motion.p {...fade(0.1)} className="text-white/50 text-lg max-w-lg leading-relaxed">
                     Nova nació de una idea simple: mereces una plataforma que tenga
-                    todo — anime, películas, series, deportes en vivo y manhwa —
+                    todo — anime, películas, series y deportes en vivo —
                     sin tener que buscar en diez sitios diferentes.
                 </motion.p>
             </section>
@@ -50,7 +50,6 @@ export default function About() {
                             ['Anime', 'Sub y doblado. Sin restricciones.'],
                             ['Películas & Series', 'Lo que está en tendencia, cuando quieras.'],
                             ['Deportes en Vivo', 'Fútbol, baloncesto y más — en tiempo real.'],
-                            ['Comics & Manhwa', 'Exclusivo Nova+. Miles de títulos coreanos y más.'],
                         ].map(([title, desc]) => (
                             <li key={title} className="flex gap-5 items-start group">
                                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-white/20
