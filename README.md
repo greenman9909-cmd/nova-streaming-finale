@@ -1,58 +1,20 @@
-# NOVA Streaming Platform
+# Yoru Anime Lab
 
-Premium anime & streaming platform with modern UI.
+A maintainable React + TypeScript anime discovery/player application used as the God Tree's controlled test subject.
 
-## Quick Start
+## Runtime
+- AniList GraphQL for catalogue/search/details/artwork.
+- Supabase Auth + isolated `yoru_*` tables with RLS for library/progress/history/settings.
+- HLS.js player.
+- Legal public HLS test stream by default; configure `VITE_PLAYBACK_API_BASE` only for an authorized Yoru-compatible resolver.
 
-### 1. Start Backend (Terminal 1)
-```bash
-cd nova-backend
-bun run dev
-```
-Backend runs on `http://localhost:3030`
+## Design
+Original source informed by the historical extracted ani.pm design evidence: cinematic near-full-height hero, split glass navigation, quiet metadata chips, white Play CTA, dense media shelves, dark canvas, and restrained motion. No extracted production bundle, private endpoint, brand copy, logo, or proprietary asset is shipped.
 
-### 2. Start Frontend (Terminal 2)
-```bash
-cd nova-frontend
-npm run dev
-```
-Frontend runs on `http://localhost:5173` (or 5174 if port busy)
+## Routes
+`/`, `/anime`, `/search`, `/genres`, `/latest`, `/anime/:id`, `/watch/:anilistId/:episode`, `/library`, `/settings`.
 
-## Features
+## Environment
+`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, optional `VITE_PLAYBACK_API_BASE`.
 
-- **Inicio** - Homepage with featured content, trending anime
-- **Películas** - Movies with 4K/HDR badges, genre filters
-- **Series** - TV shows with season info
-- **Anime** - Anime catalog with search, filters
-- **Deportes** - Live sports scores, upcoming events
-- **Nova AI** - Fox chatbot assistant
-
-## Tech Stack
-
-- **Frontend**: React + Vite + TypeScript + Tailwind CSS
-- **Backend**: Bun + Hono
-- **API**: anime-peach-eight.vercel.app
-
-## Project Structure
-
-```
-nova main/
-├── nova-backend/       # Hono API server
-│   └── src/
-│       ├── index.ts    # Server entry
-│       └── routes/
-│           └── anime.ts # Anime API routes
-│
-└── nova-frontend/      # React app
-    └── src/
-        ├── components/ # UI components
-        ├── pages/      # Route pages
-        └── App.tsx     # Router setup
-```
-
-
----
-
-### Support
-
-If you enjoy this project and want to support more builds, you can optionally [support me on Ko-fi](https://ko-fi.com/yorusayano).
+This branch is the controlled God Tree test subject. New frontend/backend lessons should be trialed here before promotion into tree-wide rules.
